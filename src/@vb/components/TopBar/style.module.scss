@@ -1,0 +1,41 @@
+@import 'mixins.scss';
+
+.topbar {
+  padding: 0 rem(30);
+  min-height: 100px;
+  height: 100px;
+  border-bottom: 1px solid $border;
+  color: $text;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+
+  @media (max-width: $sm-max-width) {
+    padding: 0 rem(16);
+  }
+}
+
+:global(.vb__layout__separatedHeader) {
+  .topbar {
+    background: $gray-1;
+    padding: 0 rem(20);
+    border-radius: 8px;
+    border: none;
+  }
+}
+
+// dark theme
+[data-vb-theme='dark'] {
+  .topbar {
+    background: $dark-gray-6;
+    color: $dark-gray-1;
+    border-bottom: 1px solid $dark-gray-4;
+  }
+
+  :global(.vb__layout__separatedHeader) {
+    .topbar {
+      border: 1px solid $dark-gray-4;
+    }
+  }
+}
