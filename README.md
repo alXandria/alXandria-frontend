@@ -1,6 +1,6 @@
-# Praetor Frontend
+# Alxandria Frontend
 
-Praetor frontend provides new ui for providers in Akash network.
+Alxandria Project
 
 ## Run Locally
 
@@ -9,7 +9,7 @@ Clone the project
 Please use node 14.15
 
 ```bash
-  git clone https://github.com/PraetorOne/praetor-frontend.git
+  git clone git@github.com:Arc10-Technologies-Inc/alxandria-frontend.git
 ```
 
 Go to the project directory
