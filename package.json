@@ -1,5 +1,5 @@
 {
-  "name": "akash-referral-program",
+  "name": "alxandria-frontend",
   "version": "v0.5.11",
   "private": true,
   "scripts": {
@@ -29,7 +29,6 @@
     ]
   },
   "dependencies": {
-    "@akashnetwork/akashjs": "^0.0.28",
     "@ant-design/icons": "^4.7.0",
     "@cosmjs/cosmwasm-stargate": "^0.29.1",
     "@cosmjs/launchpad": "^0.27.1",

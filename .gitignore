@@ -25,6 +25,3 @@ yarn-debug.log*
 yarn-error.log*
 node_modules
 __temp
-
-#Temp
-.akash-deployments

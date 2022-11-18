@@ -3,13 +3,9 @@ import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import NProgress from 'nprogress'
 import { Helmet } from 'react-helmet'
-// import PublicLayout from './Public'
 import MainLayout from './Main'
-import AuthLayout from './Auth'
-// import ExtraLayout from './Extra'
 
 const Layouts = {
-  auth: AuthLayout,
   main: MainLayout,
 }
 

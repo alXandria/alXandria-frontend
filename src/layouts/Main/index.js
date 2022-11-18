@@ -2,6 +2,7 @@
 import React from 'react'
 import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
+import Footer2 from '@vb/components/Footer2'
 import TopBar from '@vb/components/TopBar'
 import style from './style.module.scss'
 
@@ -17,6 +18,7 @@ const MainLayout = ({ children }) => {
           </div>
         </div>
       </div>
+      <Footer2 />
     </div>
   )
 }
