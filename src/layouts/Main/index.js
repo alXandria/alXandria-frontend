@@ -2,8 +2,8 @@
 import React from 'react'
 import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
-import Footer2 from '@vb/components/Footer2'
-import TopBar from '@vb/components/TopBar'
+import Footer2 from '@alxandria-core/components/Footer2'
+import TopBar from '@alxandria-core/components/TopBar'
 import style from './style.module.scss'
 
 const MainLayout = ({ children }) => {

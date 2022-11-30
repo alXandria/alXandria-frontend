@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
-import { Button, Divider, Input } from 'antd'
+import { Button, Divider, Input, Tag } from 'antd'
 import { Link } from 'react-router-dom'
 import { history } from 'index'
 import style from './style.module.scss'
@@ -12,7 +12,6 @@ const HomeComponent = ({ chain }) => {
   const [search, setSearch] = useState('')
   useEffect(() => {
     const onConnect = async () => {
-      console.log('Wasm', chain.cosmWasmClient)
       if (chain.cosmWasmClient.queryClient.wasm.queryContractSmart) {
         const ContractAddress = process.env.REACT_APP_CONTRACT_ADDR
         // Query arguments
@@ -48,8 +47,6 @@ const HomeComponent = ({ chain }) => {
 
     if (searchValue.length > 0) {
       const filtetedPost = posts.filter((element) => {
-        console.log(element)
-        console.log(element.post_title.includes(value))
         return (
           element.post_title.toLowerCase().includes(searchValue.toLowerCase()) ||
           element.text.toLowerCase().includes(searchValue.toLowerCase())
@@ -132,6 +129,15 @@ const HomeComponent = ({ chain }) => {
                           </div>
                         </div>
                       </div>
+                      {post && post.tags && post.tags.length > 0 && (
+                        <div className="col-md-12">
+                          {post.tags.map((tag, index) => (
+                            <Tag key={index}>
+                              {tag}
+                            </Tag>
+                          ))}
+                        </div>
+                      )}
                       <Divider />
                     </div>
                   </Link>

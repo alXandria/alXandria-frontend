@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
-import { Button, Divider, Form, Input, notification, Select, Spin } from 'antd'
+import { Button, Divider, Form, Input, message, notification, Select, Spin, Upload } from 'antd'
 import { GasPrice, calculateFee, coin } from '@cosmjs/stargate'
 import { history } from 'index'
 import { convertToRaw, EditorState, ContentState, convertFromHTML } from 'draft-js'
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
+import { LoadingOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { create } from 'ipfs-http-client'
 import draftToHtml from 'draftjs-to-html'
 import { Editor } from 'react-draft-wysiwyg'
@@ -44,6 +44,7 @@ const CreateEditPost = ({ editPost = false, postId = null, chain }) => {
     const request = {
       content: finalHtmlContent,
       sideContent: values.sideContent,
+      heroImage: imageUrl,
     }
 
     const file = new File([JSON.stringify(request)], 'some.txt', { type: 'text/plain' })
@@ -136,11 +137,11 @@ const CreateEditPost = ({ editPost = false, postId = null, chain }) => {
           [coin(2000000, process.env.REACT_APP_COIN_MIN_DENOM)],
         )
         notification.success({ message: 'The post has been edited' })
+        history.push('/')
       } catch (error) {
         console.log(error)
-        notification.error({ message: error })
+        notification.error({ message: 'Error editing post, make sure you have 2junox' })
       }
-      history.push('/')
       setLoading(false)
     } else {
       // create
@@ -163,12 +164,15 @@ const CreateEditPost = ({ editPost = false, postId = null, chain }) => {
           [coin(1000000, process.env.REACT_APP_COIN_MIN_DENOM)],
         )
         notification.success({ message: 'The post has been created' })
+        history.push('/')
+        setLoading(false)
       } catch (error) {
         console.log(error)
-        notification.error({ message: error })
+        notification.error({
+          message: 'Error Creating Post, Make sure you have enough Juno to create a post!',
+        })
+        setLoading(false)
       }
-      history.push('/')
-      setLoading(false)
     }
   }
 
@@ -177,6 +181,50 @@ const CreateEditPost = ({ editPost = false, postId = null, chain }) => {
     setLoadingTitle('Saving to IPFS....')
     await submitValueToIPFS(value)
   }
+
+  const getBase64 = (img, callback) => {
+    const reader = new FileReader()
+    reader.addEventListener('load', () => callback(reader.result))
+    reader.readAsDataURL(img)
+  }
+
+  const beforeUpload = (file) => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
+    if (!isJpgOrPng) {
+      message.error('You can only upload JPG/PNG file!')
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2
+    if (!isLt2M) {
+      message.error('Image must smaller than 2MB!')
+    }
+    return isJpgOrPng && isLt2M
+  }
+
+  const [imageLoading, setImageLoading] = useState(false)
+  const [imageUrl, setImageUrl] = useState()
+  const handleChange = (info) => {
+    console.log(info)
+    if (info.file.status === 'uploading') {
+      setImageLoading(true)
+      getBase64(info.file.originFileObj, (url) => {
+        setImageLoading(false)
+        console.log(url)
+        setImageUrl(url)
+      })
+    }
+  }
+  const uploadButton = (
+    <div>
+      {imageLoading ? <LoadingOutlined /> : <PlusOutlined />}
+      <div
+        style={{
+          marginTop: 8,
+        }}
+      >
+        Upload
+      </div>
+    </div>
+  )
 
   return (
     <Spin spinning={loading} tip={loadingTitle}>
@@ -228,6 +276,32 @@ const CreateEditPost = ({ editPost = false, postId = null, chain }) => {
                     ]}
                   >
                     <Input />
+                  </Form.Item>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-md-6 col-sm-12">
+                  <Form.Item name="hero-image" label="Hero Image">
+                    <Upload
+                      name="Hero Image"
+                      listType="picture-card"
+                      className="avatar-uploader"
+                      showUploadList={false}
+                      beforeUpload={beforeUpload}
+                      onChange={handleChange}
+                    >
+                      {imageUrl ? (
+                        <img
+                          src={imageUrl}
+                          alt="avatar"
+                          style={{
+                            width: '100%',
+                          }}
+                        />
+                      ) : (
+                        uploadButton
+                      )}
+                    </Upload>
                   </Form.Item>
                 </div>
               </div>

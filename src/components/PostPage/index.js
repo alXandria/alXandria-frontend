@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
-import { Button, Divider, notification } from 'antd'
+import { Button, Divider, notification, Tag } from 'antd'
 import { calculateFee, coin, GasPrice } from '@cosmjs/stargate'
 import Swal from 'sweetalert2'
 import { useParams } from 'react-router-dom'
@@ -10,6 +10,7 @@ import style from './style.module.scss'
 const PostPage = ({ chain }) => {
   const [postDetails, setPostDetails] = useState([])
   const [postContent, setPostContent] = useState()
+  const [heroImage, setHeroImage] = useState()
   const [postSideContent, setPostSideContent] = useState([])
   const { id } = useParams()
   useEffect(() => {
@@ -27,6 +28,7 @@ const PostPage = ({ chain }) => {
             const result = JSON.parse(d)
             setPostSideContent(result.sideContent)
             setPostContent(result.content)
+            setHeroImage(result.heroImage)
           })
         })
       }
@@ -87,7 +89,6 @@ const PostPage = ({ chain }) => {
           })
           history.push('/')
         } catch (error) {
-          console.log(error)
           notification.error({
             message: `Error deleting - ${error}`,
           })
@@ -103,42 +104,67 @@ const PostPage = ({ chain }) => {
           <div className="row">
             <div className="col-12 text-left">
               <h1 style={{ fontWeight: 'bold' }}>{postDetails.post_title}</h1>
-              <span>{postDetails.author}</span>
-              <br />
-              <span>{convertTime(postDetails.creation_date)}</span>
             </div>
             <Divider />
             <div className="col-md-12 text-center mt-3 mb-5">{postDetails.text}</div>
             <div className="col-md-12">
-              {postSideContent.length > 0 && (
+              {(postSideContent.length > 0 || heroImage) && (
                 <div className={style.sideContent}>
                   <div className="container-full">
                     <div className="row">
                       <div className="col-md-12 text-center mb-3">
                         <div className={style.postTitleSidebar}>{postDetails.post_title}</div>
                       </div>
+                      {heroImage && (
+                        <>
+                          <div className="col-md-12">
+                            <Divider className="mt-1" />
+                          </div>
+                          <div className="col-md-12 mb-3" style={{ textAlign: 'center' }}>
+                            <img src={heroImage} alt="hero" style={{ maxWidth: 200 }} />
+                          </div>
+                        </>
+                      )}
                       <div className="col-md-12">
                         <Divider className={style.lessBorder} />
                       </div>
                     </div>
-                    {postSideContent.map((pair, index) => {
-                      return (
-                        <div key={index}>
-                          <div className="row">
-                            <div className="col-md-6">{pair.subtitle}</div>
-                            <div className="col-md-6" style={{ overflowWrap: 'break-word' }}>
-                              {pair.value}
+                    {postSideContent &&
+                      postSideContent.map((pair, index) => {
+                        return (
+                          <div key={index}>
+                            <div className="row">
+                              <div className="col-md-6">{pair.subtitle}</div>
+                              <div className="col-md-6" style={{ overflowWrap: 'break-word' }}>
+                                {pair.value}
+                              </div>
                             </div>
+                            {/* <Divider /> */}
                           </div>
-                          {/* <Divider /> */}
-                        </div>
-                      )
-                    })}
+                        )
+                      })}
                   </div>
                 </div>
               )}
               <div dangerouslySetInnerHTML={{ __html: postContent }} />
             </div>
+            <Divider />
+            {postDetails && postDetails.tags && postDetails.tags.length > 0 && (
+              <div className="col-md-12">
+                {postDetails.tags.map((tag, index) => (
+                  <Tag color="orange" key={index}>
+                    {tag}
+                  </Tag>
+                ))}
+              </div>
+            )}
+            <Divider />
+            <div className="col-md-12 mt-3 mb-3">
+              <span>{postDetails.author}</span>
+              <br />
+              <span>{convertTime(postDetails.creation_date)}</span>
+            </div>
+            <Divider />
             <div className="col-md-12">
               <Button onClick={() => editPost()} type="primary" className="mr-3">
                 Edit Post
