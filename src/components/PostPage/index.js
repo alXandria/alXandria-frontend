@@ -37,9 +37,9 @@ const PostPage = ({ chain }) => {
     onConnect()
   }, [chain.cosmWasmClient, id])
 
-  const convertTime = (desmosTime) => {
-    if (desmosTime) {
-      const splitTime = desmosTime.split('.')
+  const convertTime = (alxTimeTime) => {
+    if (alxTimeTime) {
+      const splitTime = alxTimeTime.split('.')
       const timestamp = splitTime[0]
       const date = new Date(Number(timestamp) * 1000)
       return `${date.toLocaleDateString('en-US')}, ${date.toLocaleTimeString('en-US')}`

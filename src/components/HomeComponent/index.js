@@ -60,9 +60,9 @@ const HomeComponent = ({ chain }) => {
     onConnect()
   }, [chain.cosmWasmClient])
 
-  const convertTime = (desmosTime) => {
-    if (desmosTime) {
-      const splitTime = desmosTime.split('.')
+  const convertTime = (alxTimeTime) => {
+    if (alxTimeTime) {
+      const splitTime = alxTimeTime.split('.')
       const timestamp = splitTime[0]
 
       const date = new Date(Number(timestamp) * 1000)
