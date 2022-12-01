@@ -56,3 +56,17 @@
 .subspan {
   font-size: 12px;
 }
+
+/* Portrait tablets and small desktops */
+@media (min-width: 768px) and (max-width: 991px) {
+  .bgimg {
+    background-image: none;
+  }
+}
+
+/* Landscape phones and portrait tablets */
+@media (max-width: 767px) {
+  .backgroundImage {
+    background-image: none !important;
+  }
+}

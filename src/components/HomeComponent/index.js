@@ -103,7 +103,7 @@ const HomeComponent = ({ chain }) => {
       <div style={{ backgroundColor: '#fbd6d6' }}>
         <div className="container">
           <div
-            className="row mb-5"
+            className={`row mb-5 ${style.backgroundImage}`}
             style={{
               minHeight: 300,
               backgroundImage: `url("${backgroundImage}")`,
@@ -189,7 +189,6 @@ const HomeComponent = ({ chain }) => {
               onChange={handleChange}
               style={{ bottom: '0px' }}
             />
-
           </div>
         </div>
       </div>
