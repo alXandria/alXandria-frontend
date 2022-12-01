@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
-import { Button, Divider, Input, Tag } from 'antd'
+import { Button, Divider, Input, Pagination, Tag } from 'antd'
 import { Link } from 'react-router-dom'
+import { HttpBatchClient, Tendermint34Client } from '@cosmjs/tendermint-rpc'
+import { QueryClient } from '@cosmjs/stargate'
 import { history } from 'index'
+import { setupWasmExtension } from '@cosmjs/cosmwasm-stargate'
+import ChainInfo from 'utils/chainInfo'
 import style from './style.module.scss'
 import backgroundImage from '../../../public/resources/images/knowledge.svg'
 
@@ -10,22 +14,48 @@ const HomeComponent = ({ chain }) => {
   const [posts, setPosts] = useState([])
   const [filteredPosts, setFilteredPosts] = useState([])
   const [search, setSearch] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalCount, setTotalCount] = useState(0)
+  const [minIndex, setMinIndex] = useState(0)
+  const [maxIndex, setMaxIndex] = useState(10)
+  const pageSize = 10
+
   useEffect(() => {
     const onConnect = async () => {
-      if (chain.cosmWasmClient.queryClient.wasm.queryContractSmart) {
-        const ContractAddress = process.env.REACT_APP_CONTRACT_ADDR
-        // Query arguments
-        const allPosts = {
-          all_posts: {},
+      const httpBatch = new HttpBatchClient(ChainInfo.rpc)
+      Tendermint34Client.create(httpBatch).then(async (tmClient) => {
+        const queryClient = QueryClient.withExtensions(tmClient, setupWasmExtension)
+        if (queryClient.wasm.queryContractSmart) {
+          const ContractAddress = process.env.REACT_APP_CONTRACT_ADDR
+          // Query arguments
+          const allPosts = {
+            all_posts: {},
+          }
+          const queryResult = await queryClient.wasm.queryContractSmart(ContractAddress, allPosts)
+          const count = { article_count: {} }
+          const countResult = await queryClient.wasm.queryContractSmart(ContractAddress, count)
+          let allPostsResponse = []
+          allPostsResponse = [...queryResult.posts]
+
+          for (let i = 0; i < countResult.article_count % 10; i += 1) {
+            const pagePosts = {
+              all_posts: {
+                start_after: currentPage * 10,
+              },
+            }
+            // Do query type 'smart'
+            const paginationQueryResult = await queryClient.wasm.queryContractSmart(
+              ContractAddress,
+              pagePosts,
+            )
+
+            allPostsResponse.push(...paginationQueryResult.posts)
+          }
+          setTotalCount(countResult.article_count)
+          setPosts(allPostsResponse)
+          setFilteredPosts(allPostsResponse)
         }
-        // Do query type 'smart'
-        const queryResult = await chain.cosmWasmClient.queryClient.wasm.queryContractSmart(
-          ContractAddress,
-          allPosts,
-        )
-        setPosts(queryResult.posts)
-        setFilteredPosts(queryResult.posts)
-      }
+      })
     }
     onConnect()
   }, [chain.cosmWasmClient])
@@ -43,8 +73,10 @@ const HomeComponent = ({ chain }) => {
 
   const searchArticles = (value) => {
     const searchValue = value.target.value
+    setCurrentPage(1)
+    setMinIndex(0)
+    setMaxIndex(10)
     setSearch(searchValue)
-
     if (searchValue.length > 0) {
       const filtetedPost = posts.filter((element) => {
         return (
@@ -52,11 +84,18 @@ const HomeComponent = ({ chain }) => {
           element.text.toLowerCase().includes(searchValue.toLowerCase())
         )
       })
-
       setFilteredPosts(filtetedPost)
+      setTotalCount(filteredPosts.length)
     } else {
+      setTotalCount(posts.length)
       setFilteredPosts(posts)
     }
+  }
+
+  const handleChange = (page) => {
+    setCurrentPage(page)
+    setMinIndex((page - 1) * pageSize)
+    setMaxIndex(page * pageSize)
   }
 
   return (
@@ -110,10 +149,11 @@ const HomeComponent = ({ chain }) => {
         </div>
         <div className="row">
           <div className="col-12">
-            {filteredPosts.map((post) => {
-              if (!post.deletion_date) {
-                return (
-                  <Link to={`post/${post.post_id}`} key={post.post_id}>
+            {filteredPosts?.map(
+              (post, index1) =>
+                index1 >= minIndex &&
+                index1 < maxIndex && (
+                  <Link to={`post/${post.post_id}`} key={index1}>
                     <div className="row">
                       <div className="col-12">
                         <div className="row mb-3">
@@ -132,19 +172,24 @@ const HomeComponent = ({ chain }) => {
                       {post && post.tags && post.tags.length > 0 && (
                         <div className="col-md-12">
                           {post.tags.map((tag, index) => (
-                            <Tag key={index}>
-                              {tag}
-                            </Tag>
+                            <Tag key={index + index1}>{tag}</Tag>
                           ))}
                         </div>
                       )}
                       <Divider />
                     </div>
                   </Link>
-                )
-              }
-              return ''
-            })}
+                ),
+            )}
+
+            <Pagination
+              pageSize={10}
+              current={currentPage}
+              total={totalCount}
+              onChange={handleChange}
+              style={{ bottom: '0px' }}
+            />
+
           </div>
         </div>
       </div>

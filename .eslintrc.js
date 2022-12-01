@@ -26,6 +26,7 @@ module.exports = {
     'no-console': 0,
     'react/no-multi-comp': 0,
     'react/no-array-index-key': 0,
+    'no-await-in-loop': 0,
     'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
     // "no-unused-vars": 0
   },

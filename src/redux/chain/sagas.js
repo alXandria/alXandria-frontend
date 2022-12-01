@@ -1,5 +1,5 @@
-import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { all, call, put, takeLatest } from 'redux-saga/effects'
+import {  SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { all, call, put, takeEvery } from 'redux-saga/effects'
 import ChainInfo from 'utils/chainInfo'
 import actions from './actions'
 
@@ -23,8 +23,20 @@ export function* SETUP() {
         ChainInfo.rpc,
         offlineSigner,
       )
+
       if (CosmWasmClient) {
-        console.log(CosmWasmClient)
+        yield put({
+          type: 'chain/SET_STATE',
+          payload: {
+            cosmWasmClient: CosmWasmClient,
+            loading: false,
+            cosmLoaded: true,
+            offlineSigner,
+          },
+        })
+      }
+
+      if (CosmWasmClient) {
         yield put({
           type: 'chain/SET_STATE',
           payload: {
@@ -44,5 +56,5 @@ export function* SETUP() {
 }
 
 export default function* rootSaga() {
-  yield all([takeLatest(actions.SETUP, SETUP)])
+  yield all([takeEvery(actions.SETUP, SETUP)])
 }

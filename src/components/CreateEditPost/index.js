@@ -22,6 +22,7 @@ const CreateEditPost = ({ editPost = false, postId = null, chain }) => {
   const [loadingTitle, setLoadingTitle] = useState('Loading...')
   const [postDetails, setPostDetails] = useState([])
   const [postSideContent, setPostSideContent] = useState([])
+  const [postImage, setPostImage] = useState(null)
   const [editLoading, setEditLoading] = useState(editPost)
 
   let ipfs
@@ -97,6 +98,7 @@ const CreateEditPost = ({ editPost = false, postId = null, chain }) => {
           r.text().then((d) => {
             const result = JSON.parse(d)
             setPostSideContent(result.sideContent)
+            setPostImage(result.heroImage)
 
             const blocksFromHTML = convertFromHTML(result.content)
             const state = ContentState.createFromBlockArray(
@@ -226,6 +228,13 @@ const CreateEditPost = ({ editPost = false, postId = null, chain }) => {
     </div>
   )
 
+  const dummyRequest = ({ file, onSuccess }) => {
+    console.log(file)
+    setTimeout(() => {
+      onSuccess('ok')
+    }, 0)
+  }
+
   return (
     <Spin spinning={loading} tip={loadingTitle}>
       {!editLoading && (
@@ -281,18 +290,19 @@ const CreateEditPost = ({ editPost = false, postId = null, chain }) => {
               </div>
               <div className="row">
                 <div className="col-md-6 col-sm-12">
-                  <Form.Item name="hero-image" label="Hero Image">
+                  <Form.Item name="hero-image" label="Post Image">
                     <Upload
-                      name="Hero Image"
+                      name="postImage"
                       listType="picture-card"
                       className="avatar-uploader"
                       showUploadList={false}
                       beforeUpload={beforeUpload}
                       onChange={handleChange}
+                      customRequest={dummyRequest}
                     >
-                      {imageUrl ? (
+                      {imageUrl || postImage ? (
                         <img
-                          src={imageUrl}
+                          src={!imageUrl ? postImage : imageUrl}
                           alt="avatar"
                           style={{
                             width: '100%',
