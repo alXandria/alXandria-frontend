@@ -12,12 +12,6 @@ Please use node 14.15
   git clone git@github.com:Arc10-Technologies-Inc/alxandria-frontend.git
 ```
 
-Go to the project directory
-
-```bash
-  cd praetor-frontend
-```
-
 Install dependencies
 
 ```bash
