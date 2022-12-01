@@ -4,7 +4,7 @@ const ChainInfo = {
   rpc: process.env.REACT_APP_RPC,
   rest: process.env.REACT_APP_REST,
   bip44: {
-    coinType: process.env.REACT_APP_COIN_TYPE,
+    coinType: Number(process.env.REACT_APP_COIN_TYPE),
   },
   bech32Config: {
     bech32PrefixAccAddr: process.env.REACT_APP_BECH32_ACC_ADDR,
@@ -18,7 +18,7 @@ const ChainInfo = {
     {
       coinDenom: process.env.REACT_APP_COIN_DENOM,
       coinMinimalDenom: process.env.REACT_APP_COIN_MIN_DENOM,
-      coinDecimals: process.env.REACT_APP_COIN_DECIMALS,
+      coinDecimals: Number(process.env.REACT_APP_COIN_DECIMALS),
       coinGeckoId: process.env.REACT_APP_COIN_GECKO_ID,
     },
   ],
@@ -26,21 +26,21 @@ const ChainInfo = {
     {
       coinDenom: process.env.REACT_APP_COIN_DENOM,
       coinMinimalDenom: process.env.REACT_APP_COIN_MIN_DENOM,
-      coinDecimals: process.env.REACT_APP_COIN_DECIMALS,
+      coinDecimals: Number(process.env.REACT_APP_COIN_DECIMALS),
       coinGeckoId: process.env.REACT_APP_COIN_GECKO_ID,
     },
   ],
   stakeCurrency: {
     coinDenom: process.env.REACT_APP_COIN_DENOM,
     coinMinimalDenom: process.env.REACT_APP_COIN_MIN_DENOM,
-    coinDecimals: process.env.REACT_APP_COIN_DECIMALS,
+    coinDecimals: Number(process.env.REACT_APP_COIN_DECIMALS),
     coinGeckoId: process.env.REACT_APP_COIN_GECKO_ID,
   },
-  coinType: process.env.REACT_APP_COIN_TYPE,
+  coinType: Number(process.env.REACT_APP_COIN_TYPE),
   gasPriceStep: {
-    low: process.env.REACT_APP_GAS_LOW,
-    average: process.env.REACT_APP_GAS_AVERAGE,
-    high: process.env.REACT_APP_GAS_HIGH,
+    low: Number(process.env.REACT_APP_GAS_LOW),
+    average: Number(process.env.REACT_APP_GAS_AVERAGE),
+    high: Number(process.env.REACT_APP_GAS_HIGH),
   },
 }
 
