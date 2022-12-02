@@ -115,7 +115,7 @@ const HomeComponent = ({ chain }) => {
           >
             <div className="col-md-6">
               <h6 style={{ verticalAlign: 'middle', fontWeight: 'bold' }}>
-                Find best Web3 articles in one place
+                Find the best web3 articles in one place
               </h6>
               <h1 style={{ fontWeight: 'bold' }}>
                 The <span style={{ color: '#F13800', fontWeight: '900' }}>Fireproof</span>{' '}
