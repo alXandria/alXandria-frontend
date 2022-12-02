@@ -110,7 +110,7 @@ const PostPage = ({ chain }) => {
             <div className="col-md-12">
               {(postSideContent.length > 0 || heroImage) && (
                 <div className={style.sideContent}>
-                  <div className="container-full">
+                  <div className={`${style.sideContentContainer} container-full`}>
                     <div className="row">
                       <div className="col-md-12 text-center mb-3">
                         <div className={style.postTitleSidebar}>{postDetails.post_title}</div>
@@ -146,7 +146,7 @@ const PostPage = ({ chain }) => {
                   </div>
                 </div>
               )}
-              <div dangerouslySetInnerHTML={{ __html: postContent }} />
+              <div dangerouslySetInnerHTML={{ __html: postContent }} className="post-details" />
             </div>
             <Divider />
             {postDetails && postDetails.tags && postDetails.tags.length > 0 && (

@@ -61,13 +61,18 @@
 }
 
 .sideContent {
-  border: 1px solid rgba(0, 0, 0, 0.4);
   border-radius: 5px;
-  padding: 10px;
   float: right;
-  width: 22em;
+  width: 25em;
   margin-left: 20px;
   margin-bottom: 15px;
+  background-color: #fff;
+  padding-left: 15px;
+}
+
+.sideContentContainer {
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  padding: 15px;
 }
 
 .postTitleSidebar {

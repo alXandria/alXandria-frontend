@@ -45,7 +45,7 @@ const CreateEditPost = ({ editPost = false, postId = null, chain }) => {
     const request = {
       content: finalHtmlContent,
       sideContent: values.sideContent,
-      heroImage: imageUrl,
+      heroImage: !imageUrl ? postImage : imageUrl,
     }
 
     const file = new File([JSON.stringify(request)], 'some.txt', { type: 'text/plain' })

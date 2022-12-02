@@ -69,8 +69,12 @@ const TopBar = () => {
       <div className="mr-4 d-none d-md-block">{/* <IssuesHistory /> */}</div>
       <div className="mr-auto d-xl-block d-none">{/* <ProjectManagement /> */}</div>
       <div className="mr-3 d-none d-sm-block ml-auto">{/* <Cart /> */}</div>
-      <div className="mr-3 d-none d-sm-block">{/* <Actions /> */}</div>
-      <div className="mr-3 d-none d-sm-block">{/* <LanguageSwitcher /> */}</div>
+      <div className="mr-3 d-none d-sm-block">
+        <a href="#">Create Account</a>
+      </div>
+      <div className="mr-3 d-none d-sm-block">
+        <a href="#">Login</a>
+      </div>
     </div>
   )
 }
