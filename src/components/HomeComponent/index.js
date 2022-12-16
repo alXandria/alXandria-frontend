@@ -105,7 +105,7 @@ const HomeComponent = ({ chain }) => {
     <Spin spinning={loading}>
       <div className={`${style.background}`}>
         <div style={{ backgroundColor: '#fbd6d6' }}>
-          <div className="container">
+          <div className="container d-lg-none">
             <div
               className={`row mb-5 ${style.backgroundImage}`}
               style={{
@@ -144,7 +144,11 @@ const HomeComponent = ({ chain }) => {
             </div>
           </div>
         </div>
-        <div className="container">
+        <div className="container-full mt-5 text-center">
+          <h1 style={{ fontSize: '62px' }}>alXandria</h1>
+          <Divider />
+        </div>
+        <div className="container mt-5">
           <div className="row mb-5" style={{ padding: 'auto 50px' }}>
             <div className="col-12 ">
               <h2>

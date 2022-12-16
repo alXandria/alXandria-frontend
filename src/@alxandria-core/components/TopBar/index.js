@@ -75,6 +75,7 @@ const TopBar = () => {
       <div className="mr-3 d-none d-sm-block">
         <a href="#">Login</a>
       </div>
+      <br />
     </div>
   )
 }
