@@ -32,7 +32,7 @@ const MainLayout = ({
         <TopBar />
         <Layout>
           <Menu />
-          <div style={{ minHeight: 400 }}>{children}</div>
+          <div style={{ minHeight: 400, margin: 'auto' }}>{children}</div>
         </Layout>
       </Layout>
       <Footer2 />

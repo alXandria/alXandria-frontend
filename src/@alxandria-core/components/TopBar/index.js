@@ -1,8 +1,50 @@
+import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { Button } from 'antd'
 import React from 'react'
+import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
+import ChainInfo from 'utils/chainInfo'
+import Search from './Search'
 import style from './style.module.scss'
+import UserMenu from './UserMenu'
 
-const TopBar = () => {
+const TopBar = ({ chain, dispatch }) => {
+  const connectWallet = async () => {
+    if (window && window.keplr) {
+      if (window.keplr.experimentalSuggestChain) {
+        await window.keplr.experimentalSuggestChain(ChainInfo)
+        await window.keplr.enable(ChainInfo.chainId)
+
+        const offlineSigner = await window.getOfflineSigner(ChainInfo.chainId)
+        const CosmWasmClientLocal = await SigningCosmWasmClient.connectWithSigner(
+          ChainInfo.rpc,
+          offlineSigner,
+        )
+
+        const accounts = await offlineSigner.getAccounts()
+        // console.log(accounts)
+
+        if (CosmWasmClientLocal) {
+          dispatch({
+            type: 'chain/SET_STATE',
+            payload: {
+              CosmWasmClientLocal,
+              offlineSigner,
+              loading: false,
+              cosmLoaded: true,
+              user: {
+                address: accounts[0].address,
+              },
+            },
+          })
+        }
+      } else {
+        console.warn('Error accessing experimental features, please update Keplr')
+      }
+    } else {
+      console.warn('Error accessing Keplr, please install Keplr')
+    }
+  }
   return (
     <div className={style.topbar}>
       <div className="mr-4">
@@ -65,19 +107,26 @@ const TopBar = () => {
         </Link>
         {/* <FavPages /> */}
       </div>
-      <div className="mr-auto mr-md-1">{/* <Search /> */}</div>
       <div className="mr-4 d-none d-md-block">{/* <IssuesHistory /> */}</div>
       <div className="mr-auto d-xl-block d-none">{/* <ProjectManagement /> */}</div>
       <div className="mr-3 d-none d-sm-block ml-auto">{/* <Cart /> */}</div>
-      <div className="mr-3 d-none d-sm-block">
-        <a href="#">Create Account</a>
+      <div className="mr-auto col-4 mr-md-2">
+        <Search />
       </div>
-      <div className="mr-3 d-none d-sm-block">
-        <a href="#">Login</a>
-      </div>
+      {chain.user && <UserMenu />}
+      {!chain.user && (
+        <Button type="primary" onClick={() => connectWallet()}>
+          Connect Wallet
+        </Button>
+      )}
       <br />
     </div>
   )
 }
 
-export default TopBar
+const mapStateToProps = ({ chain, dispatch }) => ({
+  dispatch,
+  chain,
+})
+
+export default connect(mapStateToProps)(TopBar)

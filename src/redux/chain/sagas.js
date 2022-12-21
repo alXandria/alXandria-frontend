@@ -1,4 +1,4 @@
-import {  SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { all, call, put, takeEvery } from 'redux-saga/effects'
 import ChainInfo from 'utils/chainInfo'
 import actions from './actions'
@@ -10,51 +10,48 @@ export function* SETUP() {
       loading: true,
     },
   })
-  console.log('Starting setup', window)
-  // load settings from url on app load
-  if (window.keplr) {
-    if (window.keplr.experimentalSuggestChain) {
-      yield call(window.keplr.experimentalSuggestChain, ChainInfo)
-      yield call(window.keplr.enable, ChainInfo.chainId)
 
-      const offlineSigner = yield call(window.getOfflineSigner, ChainInfo.chainId)
-      const CosmWasmClient = yield call(
-        SigningCosmWasmClient.connectWithSigner,
-        ChainInfo.rpc,
-        offlineSigner,
-      )
+  const CosmWasmClientLocal = yield call(CosmWasmClient.connect, ChainInfo.rpc)
 
-      if (CosmWasmClient) {
-        yield put({
-          type: 'chain/SET_STATE',
-          payload: {
-            cosmWasmClient: CosmWasmClient,
-            loading: false,
-            cosmLoaded: true,
-            offlineSigner,
-          },
-        })
-      }
+  if (CosmWasmClient) {
+    yield put({
+      type: 'chain/SET_STATE',
+      payload: {
+        cosmWasmClient: CosmWasmClientLocal,
+        loading: false,
+        cosmLoaded: true,
+      },
+    })
+  }
 
-      if (CosmWasmClient) {
-        yield put({
-          type: 'chain/SET_STATE',
-          payload: {
-            cosmWasmClient: CosmWasmClient,
-            loading: false,
-            cosmLoaded: true,
-            offlineSigner,
-          },
-        })
-      }
-    } else {
-      console.warn('Error accessing experimental features, please update Keplr')
-    }
-  } else {
-    console.warn('Error accessing Keplr, please install Keplr')
+  if (CosmWasmClient) {
+    yield put({
+      type: 'chain/SET_STATE',
+      payload: {
+        cosmWasmClient: CosmWasmClient,
+        loading: false,
+        cosmLoaded: true,
+      },
+    })
   }
 }
 
+export function* DISCONNECTWALLET() {
+  yield put({
+    type: 'chain/SET_STATE',
+    payload: {
+      loading: true,
+      offlineSigner: null,
+      user: null,
+      cosmWasmClient: null,
+    },
+  })
+  yield call(SETUP)
+}
+
 export default function* rootSaga() {
-  yield all([takeEvery(actions.SETUP, SETUP)])
+  yield all([
+    takeEvery(actions.SETUP, SETUP),
+    takeEvery(actions.DISCONNECTWALLET, DISCONNECTWALLET),
+  ])
 }
