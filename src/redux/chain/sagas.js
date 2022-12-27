@@ -1,7 +1,8 @@
-import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { all, call, put, takeEvery } from 'redux-saga/effects'
+import { CosmWasmClient, SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { all, call, put, select, takeEvery } from 'redux-saga/effects'
 import ChainInfo from 'utils/chainInfo'
 import actions from './actions'
+import getChain from './selector'
 
 export function* SETUP() {
   yield put({
@@ -11,24 +12,26 @@ export function* SETUP() {
     },
   })
 
-  const CosmWasmClientLocal = yield call(CosmWasmClient.connect, ChainInfo.rpc)
+  const chain = yield select(getChain)
+  let offlineSigner
+  let CosmWasmClientLocal
+  if (chain.user) {
+    offlineSigner = yield call(window.keplr.getOfflineSigner, ChainInfo.chainId)
+    CosmWasmClientLocal = yield call(
+      SigningCosmWasmClient.connectWithSigner,
+      ChainInfo.rpc,
+      offlineSigner,
+    )
+  } else {
+    CosmWasmClientLocal = yield call(CosmWasmClient.connect, ChainInfo.rpc)
+  }
 
-  if (CosmWasmClient) {
+  if (CosmWasmClientLocal) {
     yield put({
       type: 'chain/SET_STATE',
       payload: {
         cosmWasmClient: CosmWasmClientLocal,
-        loading: false,
-        cosmLoaded: true,
-      },
-    })
-  }
-
-  if (CosmWasmClient) {
-    yield put({
-      type: 'chain/SET_STATE',
-      payload: {
-        cosmWasmClient: CosmWasmClient,
+        offlineSigner,
         loading: false,
         cosmLoaded: true,
       },

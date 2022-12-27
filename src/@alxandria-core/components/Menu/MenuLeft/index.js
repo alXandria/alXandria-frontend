@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
-import { Layout } from 'antd'
+import { withRouter, Link } from 'react-router-dom'
+import { Button, Layout } from 'antd'
 import classNames from 'classnames'
 import style from './style.module.scss'
 
@@ -48,64 +48,63 @@ const MenuLeft = ({
       })}
     >
       <div
-        className={style.menuOuter}
+        className={`${style.menuOuter} pb-5`}
         style={{
           width: isMenuCollapsed && !isMobileView ? 80 : leftMenuWidth,
           height: isMobileView || isMenuUnfixed ? 'calc(100% - 64px)' : 'calc(100% - 110px)',
         }}
       >
         <div className="container mt-5">
+          <div className={`${style.menuItem} mb-5`}>
+            <Link to="/create-post">
+              <Button type="primary">New Post</Button>
+            </Link>
+          </div>
           <div className={style.menuItem}>
-            <a href="#" target="_blank" rel="noopener noreferrer">
-              About alXandria
-            </a>
+            <a href="/about">About alXandria</a>
           </div>
           <br />
           <div className={style.menuItem}>
-            <a href="#" target="_blank" rel="noopener noreferrer">
+            <a href="https://docs.alxandria.org/" target="_blank" rel="noopener noreferrer">
               Help
             </a>
           </div>
           <br />
           <div className={style.menuItem}>
-            <a href="#" target="_blank" rel="noopener noreferrer">
+            <a href="https://docs.alxandria.org/" target="_blank" rel="noopener noreferrer">
               How it works
             </a>
           </div>
           <div className={style.menuItem}>
-            <a href="#" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://docs.alxandria.org/how-to-use-alxandria/post-an-article"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               How to contribute
             </a>
           </div>
           <div className={style.menuItem}>
-            <a href="#" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://docs.alxandria.org/how-to-use-alxandria/edit-an-article"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               How to edit
             </a>
           </div>
           <br />
           <div className={style.menuItem}>
-            <a href="#" target="_blank" rel="noopener noreferrer">
+            <a href="/partnerships" rel="noopener noreferrer">
               Partnerships
             </a>
           </div>
-          <div className={style.menuItem}>
-            <a href="#" target="_blank" rel="noopener noreferrer">
-              Research
-            </a>
-          </div>
-          <div className={style.menuItem}>
-            <a href="#" target="_blank" rel="noopener noreferrer">
-              Institutional
-            </a>
-          </div>
-          <div className={style.menuItem}>
-            <a href="#" target="_blank" rel="noopener noreferrer">
-              Ecosystem
-            </a>
-          </div>
+          <div className={style.menuItem}>Research</div>
+          <div className={style.menuItem}>Institutional</div>
+          <div className={style.menuItem}>Ecosystem</div>
           <br />
           <div className={style.menuItem}>
-            <a href="#" target="_blank" rel="noopener noreferrer">
+            <a href="/media" rel="noopener noreferrer">
               Media
             </a>
           </div>

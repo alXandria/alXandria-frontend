@@ -1,6 +1,7 @@
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { Button } from 'antd'
-import React from 'react'
+import { calculateFee, coin, GasPrice } from '@cosmjs/stargate'
+import { Button, Form, Input, Modal, notification } from 'antd'
+import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import ChainInfo from 'utils/chainInfo'
@@ -9,31 +10,108 @@ import style from './style.module.scss'
 import UserMenu from './UserMenu'
 
 const TopBar = ({ chain, dispatch }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(false)
+
+  const showModal = () => {
+    console.log('Hi')
+    setIsModalOpen(true)
+  }
+
+  const closeModal = () => {
+    setLoading(false)
+    setError(false)
+    setIsModalOpen(false)
+  }
+
+  const createProfile = async (values) => {
+    setLoading(true)
+
+    // check if logged in && user has profile name && profile name should be atleast 3 letter
+
+    if (chain.user && !chain.user.profileName) {
+      console.log('setEverything')
+
+      const gasPrice = GasPrice.fromString(`0.002${process.env.REACT_APP_COIN_MIN_DENOM}`)
+      const txFee = calculateFee(200000, gasPrice)
+
+      const accounts = await chain.offlineSigner.getAccounts()
+      const profileNameRequest = { register_profile_name: { profile_name: values.profileName } }
+
+      try {
+        await chain.cosmWasmClient.execute(
+          accounts[0].address,
+          process.env.REACT_APP_CONTRACT_ADDR,
+          profileNameRequest,
+          txFee,
+          '',
+          [coin(500, process.env.REACT_APP_COIN_MIN_DENOM)],
+        )
+
+        notification.success({ message: 'Profile Name created!' })
+
+        dispatch({
+          type: 'chain/SET_STATE',
+          payload: {
+            user: {
+              address: accounts[0].address,
+              profileName: values.profileName,
+            },
+          },
+        })
+
+        setIsModalOpen(false)
+        setLoading(false)
+      } catch (error1) {
+        console.log(error1)
+        notification.error({ message: 'Error Occurred!' })
+        setLoading(false)
+      }
+    } else {
+      setError(true)
+      setLoading(false)
+    }
+  }
+
   const connectWallet = async () => {
     if (window && window.keplr) {
       if (window.keplr.experimentalSuggestChain) {
         await window.keplr.experimentalSuggestChain(ChainInfo)
         await window.keplr.enable(ChainInfo.chainId)
 
-        const offlineSigner = await window.getOfflineSigner(ChainInfo.chainId)
+        const offlineSigner = await window.keplr.getOfflineSigner(ChainInfo.chainId)
         const CosmWasmClientLocal = await SigningCosmWasmClient.connectWithSigner(
           ChainInfo.rpc,
           offlineSigner,
         )
 
         const accounts = await offlineSigner.getAccounts()
+
+        // Get Profile Name here
+
+        const profileNameRequest = { profile_name: { address: accounts[0].address } }
+        // Do query type 'smart'
+        const queryResult = await CosmWasmClientLocal.queryClient.wasm.queryContractSmart(
+          process.env.REACT_APP_CONTRACT_ADDR,
+          profileNameRequest,
+        )
+
+        console.log(queryResult, accounts[0].address)
+
         // console.log(accounts)
 
         if (CosmWasmClientLocal) {
           dispatch({
             type: 'chain/SET_STATE',
             payload: {
-              CosmWasmClientLocal,
+              cosmWasmClient: CosmWasmClientLocal,
               offlineSigner,
               loading: false,
               cosmLoaded: true,
               user: {
                 address: accounts[0].address,
+                profileName: queryResult.profile_name,
               },
             },
           })
@@ -45,82 +123,148 @@ const TopBar = ({ chain, dispatch }) => {
       console.warn('Error accessing Keplr, please install Keplr')
     }
   }
+
   return (
-    <div className={style.topbar}>
-      <div className="mr-4">
-        <Link to="/">
-          <svg
-            data-v-423bf9ae=""
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 421 90"
-            className="iconLeftSlogan"
-          >
-            <g
-              data-v-423bf9ae=""
-              id="81305896-e4eb-4fb9-b1cf-4e6a2d51ad30"
-              fill="#250A05"
-              transform="matrix(5.655042595806296,0,0,5.655042595806296,81.83958348909857,-0.22620120202757477)"
+    <>
+      <div className={style.topbar}>
+        <div className="mr-4">
+          <Link to="/">
+            <svg
+              version="1.1"
+              id="Layer_1"
+              xmlns="http://www.w3.org/2000/svg"
+              x="0px"
+              y="0px"
+              viewBox="0 0 421 90"
+              style={{ enableBackground: 'new 0 0 421 90' }}
             >
-              <path d="M0.99 5.47L1.50 5.57L1.79 4.49C2.18 4.35 2.62 4.33 2.98 4.33C3.81 4.33 4.38 4.80 4.38 5.80L4.38 6.54C2.56 6.54 0.43 6.85 0.43 8.81C0.43 10.02 1.34 10.65 2.52 10.65C3.49 10.65 3.86 10.43 4.41 10.00L4.65 10.50L6.51 10.50L6.61 10.00L5.70 9.70L5.70 6.38C5.70 4.73 4.80 3.81 3.07 3.81C2.35 3.81 1.69 3.96 0.99 4.31ZM4.38 9.23C4.09 9.73 3.64 10.00 3.08 10.00C2.52 10.00 1.92 9.67 1.92 8.67C1.92 7.64 2.62 7.04 4.38 7.04ZM9.53 9.70L9.53 0.20L8.90 0.04L7.42 0.20L7.52 0.70L8.22 0.70L8.22 9.70L7.31 10.00L7.41 10.50L10.35 10.50L10.44 10.00ZM15.37 6.51L17.25 9.45L16.04 9.93L16.14 10.50L20.12 10.50L20.23 9.91L19.03 9.45L16.35 5.25L19.04 1.76L20.26 1.29L20.16 0.70L17.16 0.70L17.07 1.29L18.27 1.76L16.00 4.70L14.13 1.76L15.34 1.29L15.25 0.70L11.26 0.70L11.14 1.30L12.35 1.76L15.04 5.98L12.35 9.45L11.16 9.93L11.26 10.50L14.24 10.50L14.34 9.93L13.12 9.46ZM21.39 5.47L21.90 5.57L22.19 4.49C22.58 4.35 23.02 4.33 23.38 4.33C24.21 4.33 24.78 4.80 24.78 5.80L24.78 6.54C22.96 6.54 20.83 6.85 20.83 8.81C20.83 10.02 21.74 10.65 22.92 10.65C23.88 10.65 24.26 10.43 24.81 10.00L25.05 10.50L26.91 10.50L27.01 10.00L26.10 9.70L26.10 6.38C26.10 4.73 25.20 3.81 23.46 3.81C22.75 3.81 22.09 3.96 21.39 4.31ZM24.78 9.23C24.49 9.73 24.04 10.00 23.48 10.00C22.92 10.00 22.32 9.67 22.32 8.67C22.32 7.64 23.02 7.04 24.78 7.04ZM29.86 9.70L29.86 4.84C30.31 4.63 30.81 4.47 31.36 4.47C32.10 4.47 32.75 5.00 32.75 5.89L32.75 9.70L31.84 10.00L31.95 10.50L34.87 10.50L34.97 10.00L34.06 9.70L34.06 6.10C34.06 4.62 33.21 3.81 31.68 3.81C30.95 3.81 30.45 4.05 29.86 4.33L29.36 3.81L27.75 3.96L27.85 4.47L28.55 4.47L28.55 9.70L27.64 10.00L27.73 10.50L30.67 10.50L30.79 10.00ZM40.73 9.39C40.33 9.79 39.89 10.00 39.31 10.00C38.14 10.00 37.42 8.82 37.42 7.14C37.42 5.46 38.02 4.47 39.38 4.47C39.87 4.47 40.35 4.65 40.73 4.86ZM40.75 10.00L40.98 10.50L42.85 10.50L42.95 10.00L42.04 9.70L42.04 0.20L41.41 0.04L39.79 0.20L39.89 0.70L40.73 0.70L40.73 4.14C40.26 3.93 39.77 3.81 39.30 3.81C37.24 3.81 35.95 5.21 35.95 7.28C35.95 9.37 37.02 10.65 39.23 10.65C39.91 10.65 40.49 10.25 40.75 10.00ZM48.79 5.47L48.79 4.05C48.38 3.88 47.96 3.81 47.54 3.81C46.82 3.81 46.28 4.06 45.81 4.33L45.32 3.81L43.69 3.96L43.79 4.47L44.49 4.47L44.49 9.70L43.58 10.00L43.68 10.50L46.62 10.50L46.73 10.00L45.81 9.70L45.81 4.84C46.30 4.66 46.90 4.47 47.29 4.47C47.63 4.47 47.78 4.51 47.98 4.58L48.29 5.57ZM51.73 9.70L51.73 3.96L51.09 3.81L49.60 3.96L49.70 4.47L50.41 4.47L50.41 9.70L49.49 10.00L49.60 10.50L52.53 10.50L52.64 10.00ZM51.03 0.74C50.62 0.74 50.27 1.08 50.27 1.50C50.27 1.92 50.62 2.25 51.03 2.25C51.45 2.25 51.80 1.92 51.80 1.50C51.80 1.08 51.45 0.74 51.03 0.74ZM54.19 5.47L54.70 5.57L54.99 4.49C55.38 4.35 55.82 4.33 56.18 4.33C57.01 4.33 57.58 4.80 57.58 5.80L57.58 6.54C55.76 6.54 53.63 6.85 53.63 8.81C53.63 10.02 54.54 10.65 55.72 10.65C56.69 10.65 57.06 10.43 57.61 10.00L57.85 10.50L59.71 10.50L59.81 10.00L58.90 9.70L58.90 6.38C58.90 4.73 58.00 3.81 56.27 3.81C55.55 3.81 54.89 3.96 54.19 4.31ZM57.58 9.23C57.29 9.73 56.84 10.00 56.28 10.00C55.72 10.00 55.12 9.67 55.12 8.67C55.12 7.64 55.82 7.04 57.58 7.04Z" />
-            </g>
-            <defs data-v-423bf9ae="">
-              <linearGradient
-                data-v-423bf9ae=""
-                gradientTransform="rotate(25)"
-                id="acbd16d2-bbf9-4aea-8b4a-b9141552652e"
-                x1="0%"
-                y1="0%"
-                x2="100%"
-                y2="0%"
+              <g
+                id="_x38_1305896-e4eb-4fb9-b1cf-4e6a2d51ad30"
+                transform="matrix(5.655042595806296,0,0,5.655042595806296,81.83958348909857,-0.22620120202757477)"
               >
-                <stop
-                  data-v-423bf9ae=""
-                  offset="0%"
-                  style={{ stopColor: 'rgb(48, 34, 58)', stopOpacity: 1 }}
+                <path
+                  style={{ fill: '#250A05' }}
+                  d="M1,8.1l0.5,0.1l0.3-1.1C2.2,7,2.6,7,3,7c0.8,0,1.4,0.5,1.4,1.5v0.7c-1.8,0-4,0.3-4,2.3c0,1.2,0.9,1.8,2.1,1.8
+		c1,0,1.3-0.2,1.9-0.6l0.2,0.5h1.9l0.1-0.5l-0.9-0.3V9c0-1.7-0.9-2.6-2.6-2.6C2.3,6.5,1.7,6.6,1,7V8.1z M4.4,11.9
+		c-0.3,0.5-0.7,0.8-1.3,0.8s-1.2-0.3-1.2-1.3c0-1,0.7-1.6,2.5-1.6V11.9z M9.5,12.4V2.9L8.9,2.7L7.4,2.9l0.1,0.5h0.7v9l-0.9,0.3
+		l0.1,0.5h2.9l0.1-0.5L9.5,12.4z M15.4,9.2l1.9,2.9L16,12.6l0.1,0.6h4l0.1-0.6L19,12.1l-2.7-4.2L19,4.4l1.2-0.5l-0.1-0.6h-3
+		l-0.1,0.6l1.2,0.5L16,7.4l-1.9-2.9l1.2-0.5l-0.1-0.6h-4L11.1,4l1.2,0.5L15,8.6l-2.7,3.5l-1.2,0.5l0.1,0.6h3l0.1-0.6l-1.2-0.5
+		L15.4,9.2z M21.4,8.1l0.5,0.1l0.3-1.1C22.6,7,23,7,23.4,7c0.8,0,1.4,0.5,1.4,1.5v0.7c-1.8,0-4,0.3-4,2.3c0,1.2,0.9,1.8,2.1,1.8
+		c1,0,1.3-0.2,1.9-0.6l0.2,0.5h1.9l0.1-0.5l-0.9-0.3V9c0-1.7-0.9-2.6-2.6-2.6c-0.7,0-1.4,0.2-2.1,0.5V8.1z M24.8,11.9
+		c-0.3,0.5-0.7,0.8-1.3,0.8c-0.6,0-1.2-0.3-1.2-1.3c0-1,0.7-1.6,2.5-1.6V11.9z M29.9,12.4V7.5c0.4-0.2,0.9-0.4,1.5-0.4
+		c0.7,0,1.4,0.5,1.4,1.4v3.8l-0.9,0.3l0.1,0.5h2.9l0.1-0.5l-0.9-0.3V8.8c0-1.5-0.9-2.3-2.4-2.3c-0.7,0-1.2,0.2-1.8,0.5l-0.5-0.5
+		l-1.6,0.2l0.1,0.5h0.7v5.2l-0.9,0.3l0.1,0.5h2.9l0.1-0.5L29.9,12.4z M40.7,12c-0.4,0.4-0.8,0.6-1.4,0.6c-1.2,0-1.9-1.2-1.9-2.9
+		s0.6-2.7,2-2.7c0.5,0,1,0.2,1.3,0.4V12z M40.7,12.7l0.2,0.5h1.9l0.1-0.5L42,12.4V2.9l-0.6-0.2l-1.6,0.2l0.1,0.5h0.8v3.4
+		c-0.5-0.2-1-0.3-1.4-0.3c-2.1,0-3.3,1.4-3.3,3.5c0,2.1,1.1,3.4,3.3,3.4C39.9,13.3,40.5,12.9,40.7,12.7z M48.8,8.1V6.7
+		c-0.4-0.2-0.8-0.2-1.2-0.2c-0.7,0-1.3,0.2-1.7,0.5l-0.5-0.5l-1.6,0.2l0.1,0.5h0.7v5.2l-0.9,0.3l0.1,0.5h2.9l0.1-0.5l-0.9-0.3V7.5
+		c0.5-0.2,1.1-0.4,1.5-0.4c0.3,0,0.5,0,0.7,0.1l0.3,1L48.8,8.1z M51.7,12.4V6.6l-0.6-0.2l-1.5,0.2l0.1,0.5h0.7v5.2l-0.9,0.3l0.1,0.5
+		h2.9l0.1-0.5L51.7,12.4z M51,3.4c-0.4,0-0.8,0.3-0.8,0.8c0,0.4,0.3,0.7,0.8,0.7c0.4,0,0.8-0.3,0.8-0.7C51.8,3.7,51.4,3.4,51,3.4z
+		 M54.2,8.1l0.5,0.1L55,7.1C55.4,7,55.8,7,56.2,7c0.8,0,1.4,0.5,1.4,1.5v0.7c-1.8,0-4,0.3-4,2.3c0,1.2,0.9,1.8,2.1,1.8
+		c1,0,1.3-0.2,1.9-0.6l0.2,0.5h1.9l0.1-0.5l-0.9-0.3V9c0-1.7-0.9-2.6-2.6-2.6c-0.7,0-1.4,0.2-2.1,0.5V8.1z M57.6,11.9
+		c-0.3,0.5-0.7,0.8-1.3,0.8c-0.6,0-1.2-0.3-1.2-1.3c0-1,0.7-1.6,2.5-1.6V11.9z"
                 />
-                <stop
-                  data-v-423bf9ae=""
-                  offset="100%"
-                  style={{ stopColor: 'rgb(241, 56, 0)', stopOpacity: 1 }}
+              </g>
+              <g
+                id="_x39_e55363f-d49c-472e-bd48-2e843c1d7f60"
+                transform="matrix(2.8125,0,0,2.8125,-12.426001459360123,0)"
+              >
+                <linearGradient
+                  id="SVGID_1_"
+                  gradientUnits="userSpaceOnUse"
+                  x1="-26.4395"
+                  y1="104.5985"
+                  x2="-25.4395"
+                  y2="104.5985"
+                  gradientTransform="matrix(58.2495 38.0356 27.1622 -81.5677 -1299.8217 9547.585)"
+                >
+                  <stop offset="0" style={{ stopColor: '#30223A' }} />
+                  <stop offset="1" style={{ stopColor: '#F13800' }} />
+                </linearGradient>
+                <path
+                  className="st1"
+                  style={{ fill: 'url(#SVGID_1_)' }}
+                  d="M27.4,11.4L16,0L4.6,11.4L16,22.8C16,22.8,27.4,11.4,27.4,11.4z M16,6l5.4,5.3L16,16.7l-5.4-5.4L16,6z
+		 M27.4,15l-5.7,5.7V32h5.7V15z M10.2,20.6L4.6,15v17h5.7V20.6z"
                 />
-              </linearGradient>
-            </defs>
-            <g
-              data-v-423bf9ae=""
-              id="9e55363f-d49c-472e-bd48-2e843c1d7f60"
-              transform="matrix(2.8125,0,0,2.8125,-12.426001459360123,0)"
-              stroke="none"
-              fill="url(#acbd16d2-bbf9-4aea-8b4a-b9141552652e)"
-            >
-              <path d="M27.377 11.377L16 0 4.623 11.377 16 22.753l11.377-11.376zM16 6.026l5.35 5.35L16 16.727l-5.35-5.35L16 6.026zM27.426 14.969l-5.664 5.664V32h5.664zM10.238 20.633l-5.664-5.664V32h5.664z" />
-            </g>
-            <g
-              data-v-423bf9ae=""
-              id="8e389608-9576-4e05-bd1a-c303c7713263"
-              fill="#250A05"
-              transform="matrix(0.7313436321105611,0,0,0.7313436321105611,84.06647552886008,58.20820711562757)"
-            >
-              <path d="M0.28 3.21L2.80 3.21L2.80 12.60L3.22 12.60L3.22 3.21L5.74 3.21L5.74 2.80L0.28 2.80ZM14.28 2.80L14.28 12.60L14.70 12.60L14.70 7.62L20.93 7.62L20.93 12.60L21.35 12.60L21.35 2.80L20.93 2.80L20.93 7.18L14.70 7.18L14.70 2.80ZM31.29 7.48L35.63 7.48L35.63 7.08L31.29 7.08L31.29 3.21L35.91 3.21L35.91 2.80L30.87 2.80L30.87 12.60L35.91 12.60L35.91 12.19L31.29 12.19ZM56.91 7.64L60.83 7.64L60.83 7.24L56.91 7.24L56.91 3.21L60.97 3.21L60.97 2.80L56.49 2.80L56.49 12.60L56.91 12.60ZM70 2.80L70 12.60L70.42 12.60L70.42 2.80ZM80.29 2.80ZM79.87 2.80L79.87 12.60L80.29 12.60L80.29 8.48L81.84 8.48L84.97 12.60L85.51 12.60L82.32 8.47C83.22 8.41 83.93 8.15 84.47 7.67C85.01 7.20 85.27 6.52 85.27 5.64C85.27 4.71 84.97 4.00 84.36 3.52C83.76 3.04 82.96 2.80 81.97 2.80ZM80.29 3.21L81.97 3.21C82.84 3.21 83.53 3.41 84.06 3.83C84.58 4.24 84.84 4.85 84.84 5.64C84.84 6.44 84.58 7.04 84.06 7.45C83.53 7.87 82.84 8.08 81.97 8.08L80.29 8.08ZM94.33 7.48L98.67 7.48L98.67 7.08L94.33 7.08L94.33 3.21L98.95 3.21L98.95 2.80L93.91 2.80L93.91 12.60L98.95 12.60L98.95 12.19L94.33 12.19ZM108.33 2.80L108.33 12.60L108.75 12.60L108.75 8.48L110.43 8.48C111.39 8.48 112.16 8.23 112.73 7.73C113.31 7.22 113.60 6.53 113.60 5.64C113.60 4.76 113.31 4.06 112.73 3.56C112.16 3.05 111.39 2.80 110.43 2.80ZM108.75 3.21L110.43 3.21C111.29 3.21 111.96 3.41 112.44 3.83C112.92 4.24 113.16 4.85 113.16 5.64C113.16 6.44 112.92 7.04 112.44 7.45C111.96 7.87 111.29 8.08 110.43 8.08L108.75 8.08ZM122.98 2.80ZM122.56 2.80L122.56 12.60L122.98 12.60L122.98 8.48L124.53 8.48L127.65 12.60L128.20 12.60L125.01 8.47C125.90 8.41 126.62 8.15 127.16 7.67C127.69 7.20 127.96 6.52 127.96 5.64C127.96 4.71 127.66 4.00 127.05 3.52C126.44 3.04 125.65 2.80 124.66 2.80ZM122.98 3.21L124.66 3.21C125.52 3.21 126.22 3.41 126.74 3.83C127.26 4.24 127.53 4.85 127.53 5.64C127.53 6.44 127.26 7.04 126.74 7.45C126.22 7.87 125.52 8.08 124.66 8.08L122.98 8.08ZM136.46 7.70C136.46 6.38 136.86 5.29 137.68 4.41C138.49 3.53 139.51 3.09 140.76 3.09C142.00 3.09 143.02 3.53 143.84 4.41C144.65 5.29 145.05 6.38 145.05 7.70C145.05 9.02 144.65 10.11 143.84 10.99C143.02 11.87 142.00 12.31 140.76 12.31C139.51 12.31 138.49 11.87 137.68 10.99C136.86 10.11 136.46 9.02 136.46 7.70ZM136.04 7.70C136.04 9.16 136.48 10.36 137.38 11.30C138.27 12.24 139.39 12.71 140.76 12.71C142.12 12.71 143.25 12.24 144.14 11.30C145.03 10.36 145.47 9.16 145.47 7.70C145.47 6.24 145.03 5.04 144.14 4.10C143.25 3.16 142.12 2.69 140.76 2.69C139.39 2.69 138.27 3.16 137.38 4.10C136.48 5.04 136.04 6.24 136.04 7.70ZM154.29 7.70C154.29 6.38 154.70 5.29 155.51 4.41C156.32 3.53 157.35 3.09 158.59 3.09C159.83 3.09 160.86 3.53 161.67 4.41C162.48 5.29 162.89 6.38 162.89 7.70C162.89 9.02 162.48 10.11 161.67 10.99C160.86 11.87 159.83 12.31 158.59 12.31C157.35 12.31 156.32 11.87 155.51 10.99C154.70 10.11 154.29 9.02 154.29 7.70ZM153.87 7.70C153.87 9.16 154.32 10.36 155.21 11.30C156.10 12.24 157.23 12.71 158.59 12.71C159.95 12.71 161.08 12.24 161.97 11.30C162.86 10.36 163.31 9.16 163.31 7.70C163.31 6.24 162.86 5.04 161.97 4.10C161.08 3.16 159.95 2.69 158.59 2.69C157.23 2.69 156.10 3.16 155.21 4.10C154.32 5.04 153.87 6.24 153.87 7.70ZM172.69 7.64L176.61 7.64L176.61 7.24L172.69 7.24L172.69 3.21L176.75 3.21L176.75 2.80L172.27 2.80L172.27 12.60L172.69 12.60ZM197.47 7.48L201.81 7.48L201.81 7.08L197.47 7.08L197.47 3.21L202.09 3.21L202.09 2.80L197.05 2.80L197.05 12.60L202.09 12.60L202.09 12.19L197.47 12.19ZM218.40 2.80L218.40 11.79L210.91 2.45L210.91 12.60L211.33 12.60L211.33 3.61L218.82 12.95L218.82 2.80ZM227.68 7.70C227.68 6.33 228.06 5.22 228.82 4.38C229.58 3.53 230.59 3.11 231.84 3.11C233.03 3.11 234.08 3.54 234.99 4.41L234.99 3.81C234.14 3.06 233.09 2.69 231.84 2.69C230.49 2.69 229.38 3.16 228.52 4.09C227.65 5.03 227.22 6.23 227.22 7.70C227.22 9.17 227.65 10.37 228.52 11.30C229.38 12.24 230.49 12.71 231.84 12.71C233.09 12.71 234.14 12.34 234.99 11.59L234.99 11.03C234.12 11.87 233.07 12.29 231.84 12.29C230.59 12.29 229.58 11.87 228.82 11.03C228.06 10.18 227.68 9.07 227.68 7.70ZM249.75 2.80L246.74 8.16L243.85 2.80L243.32 2.80L246.51 8.62L246.51 12.60L246.96 12.60L246.96 8.61L250.28 2.80ZM258.65 7.70C258.65 6.33 259.03 5.22 259.79 4.38C260.55 3.53 261.56 3.11 262.81 3.11C264.00 3.11 265.05 3.54 265.96 4.41L265.96 3.81C265.11 3.06 264.06 2.69 262.81 2.69C261.45 2.69 260.35 3.16 259.48 4.09C258.62 5.03 258.19 6.23 258.19 7.70C258.19 9.17 258.62 10.37 259.48 11.30C260.35 12.24 261.45 12.71 262.81 12.71C264.06 12.71 265.11 12.34 265.96 11.59L265.96 11.03C265.09 11.87 264.04 12.29 262.81 12.29C261.56 12.29 260.55 11.87 259.79 11.03C259.03 10.18 258.65 9.07 258.65 7.70ZM275.34 2.80L275.34 12.60L279.82 12.60L279.82 12.19L275.76 12.19L275.76 2.80ZM287.66 7.70C287.66 6.38 288.06 5.29 288.88 4.41C289.69 3.53 290.71 3.09 291.96 3.09C293.20 3.09 294.22 3.53 295.04 4.41C295.85 5.29 296.25 6.38 296.25 7.70C296.25 9.02 295.85 10.11 295.04 10.99C294.22 11.87 293.20 12.31 291.96 12.31C290.71 12.31 289.69 11.87 288.88 10.99C288.06 10.11 287.66 9.02 287.66 7.70ZM287.24 7.70C287.24 9.16 287.68 10.36 288.57 11.30C289.47 12.24 290.59 12.71 291.96 12.71C293.32 12.71 294.45 12.24 295.34 11.30C296.23 10.36 296.67 9.16 296.67 7.70C296.67 6.24 296.23 5.04 295.34 4.10C294.45 3.16 293.32 2.69 291.96 2.69C290.59 2.69 289.47 3.16 288.57 4.10C287.68 5.04 287.24 6.24 287.24 7.70ZM305.63 2.80L305.63 12.60L306.05 12.60L306.05 8.48L307.73 8.48C308.70 8.48 309.46 8.23 310.04 7.73C310.61 7.22 310.90 6.53 310.90 5.64C310.90 4.76 310.61 4.06 310.04 3.56C309.46 3.05 308.70 2.80 307.73 2.80ZM306.05 3.21L307.73 3.21C308.59 3.21 309.26 3.41 309.74 3.83C310.22 4.24 310.46 4.85 310.46 5.64C310.46 6.44 310.22 7.04 309.74 7.45C309.26 7.87 308.59 8.08 307.73 8.08L306.05 8.08ZM320.28 7.48L324.62 7.48L324.62 7.08L320.28 7.08L320.28 3.21L324.90 3.21L324.90 2.80L319.86 2.80L319.86 12.60L324.90 12.60L324.90 12.19L320.28 12.19ZM334.28 2.80L334.28 12.60L336.66 12.60C338.08 12.60 339.21 12.15 340.07 11.25C340.92 10.35 341.35 9.17 341.35 7.70C341.35 6.23 340.92 5.05 340.07 4.15C339.21 3.25 338.08 2.80 336.66 2.80ZM334.70 3.22L336.66 3.22C337.96 3.22 338.99 3.63 339.75 4.46C340.52 5.28 340.90 6.37 340.90 7.70C340.90 9.09 340.52 10.18 339.77 10.98C339.01 11.78 337.97 12.18 336.66 12.18L334.70 12.18ZM350.24 2.80L350.24 12.60L350.66 12.60L350.66 2.80ZM363.33 2.45L359.06 12.60L359.55 12.60L360.82 9.52L365.83 9.52L367.11 12.60L367.60 12.60ZM363.33 3.50L365.64 9.07L361.02 9.07Z" />
-            </g>
-          </svg>
-          <span>The Fireproof Encyclopedia</span>
-        </Link>
-        {/* <FavPages /> */}
+              </g>
+            </svg>
+            <span>The Fireproof Encyclopedia</span>
+          </Link>
+          {/* <FavPages /> */}
+        </div>
+        <div className="mr-4 d-none d-md-block">{/* <IssuesHistory /> */}</div>
+        <div className="mr-auto d-xl-block d-none">{/* <ProjectManagement /> */}</div>
+        <div className="mr-3 d-none d-sm-block ml-auto">{/* <Cart /> */}</div>
+        <div className="mr-auto col-4 mr-md-2">
+          <Search />
+        </div>
+        {chain.user && <UserMenu onShowModal={() => showModal()} />}
+        {!chain.user && (
+          <Button type="primary" onClick={() => connectWallet()}>
+            Connect Wallet
+          </Button>
+        )}
+        <br />
       </div>
-      <div className="mr-4 d-none d-md-block">{/* <IssuesHistory /> */}</div>
-      <div className="mr-auto d-xl-block d-none">{/* <ProjectManagement /> */}</div>
-      <div className="mr-3 d-none d-sm-block ml-auto">{/* <Cart /> */}</div>
-      <div className="mr-auto col-4 mr-md-2">
-        <Search />
-      </div>
-      {chain.user && <UserMenu />}
-      {!chain.user && (
-        <Button type="primary" onClick={() => connectWallet()}>
-          Connect Wallet
-        </Button>
-      )}
-      <br />
-    </div>
+
+      <Modal title="Create Profile Name" visible={isModalOpen} footer={null} onCancel={closeModal}>
+        <div className="container">
+          <div className="row">
+            <div className="col-md-12">
+              <i>
+                Create a unique profile name for your wallet. <br />
+                Use lowercase for profile name.
+              </i>
+            </div>
+          </div>
+          <Form name="basic" layout="vertical" onFinish={createProfile}>
+            <div className="row mt-4">
+              <div className="col-md-12">
+                {/* <Input
+                className="mt-2"
+                placeholder="e.g. satoshi"
+                size="large"
+                onChange={(e) => {
+                  setProfileName(e.target.value)
+                  setError(false)
+                }}
+              /> */}
+                <Form.Item
+                  label="Profile Name"
+                  name="profileName"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input unique profile name!',
+                    },
+                    {
+                      pattern: new RegExp('^[a-z]{1}[a-z0-9_]{2,16}$'),
+                      message: 'Only include underscore and should start with letter',
+                    },
+                  ]}
+                >
+                  <Input />
+                </Form.Item>
+              </div>
+            </div>
+            {error && (
+              <div className="row">
+                <div className="col-md-12 text-danger">
+                  Error Occurred while creating profile name.
+                </div>
+              </div>
+            )}
+            <div className="row mt-3">
+              <div className="col-md-12">
+                <Button type="primary" htmlType="submit" loading={loading}>
+                  Create Profile Name
+                </Button>
+              </div>
+            </div>
+          </Form>
+        </div>
+      </Modal>
+    </>
   )
 }
 

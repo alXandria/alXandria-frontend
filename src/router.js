@@ -37,6 +37,21 @@ const routes = [
     Component: lazy(() => import('pages/auth/500')),
     exact: true,
   },
+  {
+    path: '/about',
+    Component: lazy(() => import('pages/about')),
+    exact: true,
+  },
+  {
+    path: '/partnerships',
+    Component: lazy(() => import('pages/partnerships')),
+    exact: true,
+  },
+  {
+    path: '/media',
+    Component: lazy(() => import('pages/media')),
+    exact: true,
+  },
 ]
 
 const mapStateToProps = ({ settings }) => ({

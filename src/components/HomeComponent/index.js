@@ -52,9 +52,9 @@ const HomeComponent = ({ posts }) => {
     <Spin spinning={posts.loading}>
       <div className={`${style.background}`}>
         <div className="container-full mt-5 text-center">
-          <h1 style={{ fontSize: '62px' }}>alXandria</h1>
-          <Divider />
+          <h1 style={{ fontSize: '48px' }}>alXandria</h1>
         </div>
+        <Divider />
         <div className="container mt-5">
           <div className="row">
             <div className="col-12">
