@@ -12,7 +12,7 @@ import style from './style.module.scss'
 
 // const ipfsClient = require('ipfs-http-client')
 
-const CreateEditPost = ({ editPost = false, postId = null, chain }) => {
+const CreateEditPost = ({ editPost = false, postId = null, chain, dispatch }) => {
   const [editorState, setEditorState] = useState(EditorState.createEmpty())
   // const authorization = `Basic ${btoa(projectId)}:${projectSecret}`
   const authorization = `Basic ${Buffer.from(
@@ -139,6 +139,9 @@ const CreateEditPost = ({ editPost = false, postId = null, chain }) => {
           [coin(2000000, process.env.REACT_APP_COIN_MIN_DENOM)],
         )
         notification.success({ message: 'The post has been edited' })
+        dispatch({
+          type: 'posts/GET_POSTS',
+        })
         history.push('/')
       } catch (error) {
         console.log(error)
@@ -166,6 +169,13 @@ const CreateEditPost = ({ editPost = false, postId = null, chain }) => {
           [coin(1000000, process.env.REACT_APP_COIN_MIN_DENOM)],
         )
         notification.success({ message: 'The post has been created' })
+
+        // Get latest posts
+
+        dispatch({
+          type: 'posts/GET_POSTS',
+        })
+
         history.push('/')
         setLoading(false)
       } catch (error) {

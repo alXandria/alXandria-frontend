@@ -1,28 +1,58 @@
 // eslint-disable-next-line no-unused-vars
 import React from 'react'
 import { withRouter } from 'react-router-dom'
+import { Layout } from 'antd'
 import { connect } from 'react-redux'
+import Menu from '@alxandria-core/components/Menu'
+import classNames from 'classnames'
 import Footer2 from '@alxandria-core/components/Footer2'
 import TopBar from '@alxandria-core/components/TopBar'
-import style from './style.module.scss'
 
-const MainLayout = ({ children }) => {
+const MainLayout = ({
+  children,
+  isContentMaxWidth,
+  isAppMaxWidth,
+  isGrayBackground,
+  isSquaredBorders,
+  isCardShadow,
+  isBorderless,
+}) => {
   return (
     <div>
-      <TopBar />
-      <div style={{ minHeight: 400 }}>{children}</div>
-      <div className={`container-full pr-3 ${style.footer_red}`}>
-        <div className="row mt-5">
-          <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center">
-            <div className="mr-3">Powered by Smart Contract</div>
-          </div>
-        </div>
-      </div>
+      <Layout
+        className={classNames({
+          cui__layout__contentMaxWidth: isContentMaxWidth,
+          cui__layout__appMaxWidth: isAppMaxWidth,
+          cui__layout__grayBackground: isGrayBackground,
+          cui__layout__squaredBorders: isSquaredBorders,
+          cui__layout__cardsShadow: isCardShadow,
+          cui__layout__borderless: isBorderless,
+        })}
+      >
+        <TopBar />
+        <Layout>
+          <Menu />
+          <Layout.Content>
+            <div style={{ minHeight: 400, paddingBottom: '20px' }}>{children}</div>
+          </Layout.Content>
+        </Layout>
+      </Layout>
       <Footer2 />
     </div>
   )
 }
 
-const mapStateToProps = ({ user, dispatch, settings }) => ({ user, dispatch, settings })
+const mapStateToProps = ({ user, dispatch, settings }) => ({
+  user,
+  dispatch,
+  isContentMaxWidth: settings.isContentMaxWidth,
+  isAppMaxWidth: settings.isAppMaxWidth,
+  isGrayBackground: settings.isGrayBackground,
+  isSquaredBorders: settings.isSquaredBorders,
+  isCardShadow: settings.isCardShadow,
+  isBorderless: settings.isBorderless,
+  isTopbarFixed: settings.isTopbarFixed,
+  isGrayTopbar: settings.isGrayTopbar,
+})
 
 export default withRouter(connect(mapStateToProps)(MainLayout))

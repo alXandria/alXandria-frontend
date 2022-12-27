@@ -38,7 +38,7 @@ export const initialState = {
     isTopbarFixed: false,
     isTopbarSeparated: false,
     isGrayTopbar: false,
-    isContentMaxWidth: false,
+    isContentMaxWidth: true,
     isAppMaxWidth: false,
     isGrayBackground: false,
     isCardShadow: true,

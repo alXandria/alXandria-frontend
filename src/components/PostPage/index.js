@@ -15,9 +15,15 @@ const PostPage = ({ chain }) => {
   const { id } = useParams()
   useEffect(() => {
     const onConnect = async () => {
-      if (chain.cosmWasmClient.queryClient.wasm.queryContractSmart) {
+      if (
+        chain &&
+        chain.cosmWasmClient &&
+        chain.cosmWasmClient.queryClient &&
+        chain.cosmWasmClient.queryClient.wasm.queryContractSmart
+      ) {
         const singlePost = { post: { post_id: Number(id) } }
         // Do query type 'smart'
+        console.log(chain.cosmWasmClient)
         const queryResult = await chain.cosmWasmClient.queryClient.wasm.queryContractSmart(
           process.env.REACT_APP_CONTRACT_ADDR,
           singlePost,
@@ -165,14 +171,16 @@ const PostPage = ({ chain }) => {
               <span>{convertTime(postDetails.creation_date)}</span>
             </div>
             <Divider />
-            <div className="col-md-12">
-              <Button onClick={() => editPost()} type="primary" className="mr-3">
-                Edit Post
-              </Button>
-              <Button onClick={() => deletePost()} type="dashed">
-                Delete Post
-              </Button>
-            </div>
+            {chain.user && (
+              <div className="col-md-12">
+                <Button onClick={() => editPost()} type="primary" className="mr-3">
+                  Edit Post
+                </Button>
+                <Button onClick={() => deletePost()} type="dashed">
+                  Delete Post
+                </Button>
+              </div>
+            )}
             <div className="col-12 text-center">
               <Divider />
             </div>

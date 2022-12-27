@@ -2,11 +2,9 @@ import { PURGE } from 'redux-persist'
 import actions from './actions'
 
 const initialState = {
-  cosmWasmClient: null,
+  all: [],
+  totalCount: 0,
   loading: false,
-  cosmLoaded: false,
-  offlineSigner: null,
-  user: null,
 }
 
 export default function chainReducer(state = initialState, action) {
