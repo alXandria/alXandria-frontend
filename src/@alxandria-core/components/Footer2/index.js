@@ -14,7 +14,7 @@ const Footer = ({ settings: { isContentMaxWidth } }) => {
     >
       <div className={style.inner}>
         <div className="row">
-          <div className="col-md-12 text-center">Powered by Alxandria Smart Contract</div>
+          <div className="col-md-12 text-center">Powered by alXandria Smart Contract</div>
         </div>
       </div>
     </div>

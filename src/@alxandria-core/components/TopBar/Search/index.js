@@ -4,7 +4,7 @@ import { SearchOutlined } from '@ant-design/icons'
 import { forEach } from 'lodash'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { Input, Checkbox } from 'antd'
+import { Input } from 'antd'
 import style from './style.module.scss'
 
 let searchInput = null
@@ -30,7 +30,7 @@ const Search = ({ intl: { formatMessage }, posts }) => {
 
   const searchTags = (tags, searchValue) => {
     let flag = false
-    forEach(tags, function (value) {
+    forEach(tags, (value) => {
       if (value.toLowerCase().includes(searchValue.toLowerCase())) {
         flag = true
       }
@@ -106,9 +106,7 @@ const Search = ({ intl: { formatMessage }, posts }) => {
               ref={handleNode}
             />
             <ul className={style.options}>
-              <li className={style.option}>
-                <Checkbox checked>Search all articles</Checkbox>
-              </li>
+              <li className={style.option}>Search all articles</li>
               {/* <li className={style.option}>Press enter to search</li> */}
             </ul>
             {!filteredPosts.length && (

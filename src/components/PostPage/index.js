@@ -13,6 +13,7 @@ const PostPage = ({ chain }) => {
   const [heroImage, setHeroImage] = useState()
   const [postSideContent, setPostSideContent] = useState([])
   const { id } = useParams()
+
   useEffect(() => {
     const onConnect = async () => {
       if (
@@ -29,6 +30,7 @@ const PostPage = ({ chain }) => {
           singlePost,
         )
         setPostDetails(queryResult.post)
+        console.log(queryResult.post)
         fetch(`${queryResult.post.external_id}`).then((r) => {
           r.text().then((d) => {
             const result = JSON.parse(d)
@@ -41,7 +43,7 @@ const PostPage = ({ chain }) => {
     }
 
     onConnect()
-  }, [chain.cosmWasmClient, id])
+  }, [chain, id])
 
   const convertTime = (alxTimeTime) => {
     if (alxTimeTime) {
@@ -103,14 +105,79 @@ const PostPage = ({ chain }) => {
     })
   }
 
+  const likePost = async () => {
+    const gasPrice = GasPrice.fromString(`0.002${process.env.REACT_APP_COIN_MIN_DENOM}`)
+    const txFee = calculateFee(200000, gasPrice)
+
+    const accounts = await chain.offlineSigner.getAccounts()
+    const likePostRequest = { like_post: { post_id: Number(id) } }
+
+    try {
+      await chain.cosmWasmClient.execute(
+        accounts[0].address,
+        process.env.REACT_APP_CONTRACT_ADDR,
+        likePostRequest,
+        txFee,
+        '',
+        [coin(10000, process.env.REACT_APP_COIN_MIN_DENOM)],
+      )
+      notification.success({
+        message: 'You liked this post!',
+      })
+
+      if (
+        chain &&
+        chain.cosmWasmClient &&
+        chain.cosmWasmClient.queryClient &&
+        chain.cosmWasmClient.queryClient.wasm.queryContractSmart
+      ) {
+        const singlePost = { post: { post_id: Number(id) } }
+        // Do query type 'smart'
+        console.log(chain.cosmWasmClient)
+        const queryResult = await chain.cosmWasmClient.queryClient.wasm.queryContractSmart(
+          process.env.REACT_APP_CONTRACT_ADDR,
+          singlePost,
+        )
+        setPostDetails(queryResult.post)
+        console.log(queryResult.post)
+        fetch(`${queryResult.post.external_id}`).then((r) => {
+          r.text().then((d) => {
+            const result = JSON.parse(d)
+            setPostSideContent(result.sideContent)
+            setPostContent(result.content)
+            setHeroImage(result.heroImage)
+          })
+        })
+      }
+    } catch (error) {
+      console.log(error)
+      notification.error({
+        message: 'Error Occurred!',
+      })
+    }
+  }
+
   return (
     <div className={`${style.background}`}>
       <div className="container">
         {postDetails && (
           <div className="row">
-            <div className="col-12 text-left">
+            <div className="col-md-10 text-left">
               <h1 style={{ fontWeight: 'bold' }}>{postDetails.post_title}</h1>
             </div>
+            {chain.user && (
+              <div className="col-md-2 text-right">
+                <div>
+                  <button className={style.button} type="button" onClick={() => likePost()}>
+                    <span role="img" aria-label="Confretti">
+                      🎉
+                    </span>
+                    <span>Like</span>
+                    {postDetails.likes}
+                  </button>
+                </div>
+              </div>
+            )}
             <Divider />
             <div className="col-md-12 text-center mt-3 mb-5">{postDetails.text}</div>
             <div className="col-md-12">

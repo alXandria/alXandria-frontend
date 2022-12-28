@@ -200,7 +200,7 @@ const TopBar = ({ chain, dispatch }) => {
         </div>
         {chain.user && <UserMenu onShowModal={() => showModal()} />}
         {!chain.user && (
-          <Button type="primary" onClick={() => connectWallet()}>
+          <Button type="primary" size="large" onClick={() => connectWallet()}>
             Connect Wallet
           </Button>
         )}

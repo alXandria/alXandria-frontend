@@ -33,7 +33,7 @@ const ProfileMenu = ({ dispatch, chain, onShowModal }) => {
           <Menu.Item>
             <Button onClick={() => onShowModal()}>
               <i className="fe fe-user mr-2" />
-              <FormattedMessage id="topBar.profileMenu.editProfile" />
+              Create Profile Name
             </Button>
           </Menu.Item>
           <Menu.Divider />
@@ -42,7 +42,7 @@ const ProfileMenu = ({ dispatch, chain, onShowModal }) => {
       <Menu.Item>
         <a href="#" onClick={disconnectWallet}>
           <i className="fe fe-log-out mr-2" />
-          <FormattedMessage id="topBar.profileMenu.logout" />
+          Disconnect
         </a>
       </Menu.Item>
     </Menu>
