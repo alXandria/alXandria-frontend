@@ -5,14 +5,14 @@ const Partnerships = () => {
   return (
     <div>
       <Helmet title="Partnerships" />
-      <div className="contianer mt-5">
+      <div className="container mt-5 mb-5">
         <div className="row">
           <div className="col-md-12">
             <h2>Partnerships</h2>
           </div>
         </div>
         <div className="row mt-5">
-          <div className="col-md-6">
+          <div className="col-md-8">
             <h5>Research</h5>
             Institutional partnerships that reinforce decentralized access to information in a
             borderless manner are welcome into the alX ecosystem. These partnerships focus on
@@ -21,7 +21,7 @@ const Partnerships = () => {
           </div>
         </div>
         <div className="row mt-5">
-          <div className="col-md-6">
+          <div className="col-md-8">
             <h5>Institutional</h5>
             Private and Public companies across industries such as web3, blockchain, manufacturing,
             publishing, and more are welcome to explore partnering with alxandria to enable
@@ -31,7 +31,7 @@ const Partnerships = () => {
           </div>
         </div>
         <div className="row mt-5">
-          <div className="col-md-6">
+          <div className="col-md-8">
             <h5>Ecosystem</h5>
             Chains that want to add their tokens to the alX ecosystem as a means to re-engage,
             diversify, and grow their ecosystem are also welcome. This is a highly selective
