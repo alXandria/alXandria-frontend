@@ -5,6 +5,7 @@ import { GasPrice, calculateFee, coin } from '@cosmjs/stargate'
 import { history } from 'index'
 import { convertToRaw, EditorState, ContentState, convertFromHTML } from 'draft-js'
 import { LoadingOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
+import Helmet from 'react-helmet'
 import { create } from 'ipfs-http-client'
 import draftToHtml from 'draftjs-to-html'
 import { Editor } from 'react-draft-wysiwyg'
@@ -246,192 +247,197 @@ const CreateEditPost = ({ editPost = false, postId = null, chain, dispatch }) =>
   }
 
   return (
-    <Spin spinning={loading} tip={loadingTitle}>
-      {!editLoading && (
-        <div className={`${style.background}`}>
-          <div className="container">
-            <div className="row">
-              <div className="col-12 text-left">
-                <h2>{editPost ? 'Edit Post' : 'New Post'}</h2>
-              </div>
-            </div>
-            <Divider />
-            <Form
-              name="control-ref"
-              onFinish={onFinish}
-              layout="vertical"
-              requiredMark={false}
-              initialValues={{
-                title: editPost ? postDetails.post_title : '',
-                shortDescription: editPost ? postDetails.text : '',
-                tags: editPost ? postDetails.tags : [],
-                sideContent: editPost ? postSideContent : [],
-              }}
-            >
+    <>
+      <Helmet
+        title={`${editPost ? 'Edit  |' : 'New Post'} ${editPost ? postDetails.post_title : ''}`}
+      />
+      <Spin spinning={loading} tip={loadingTitle}>
+        {!editLoading && (
+          <div className={`${style.background}`}>
+            <div className="container">
               <div className="row">
-                <div className="col-md-6 col-sm-12">
-                  <Form.Item
-                    name="title"
-                    label="Title"
-                    rules={[
-                      {
-                        required: true,
-                      },
-                    ]}
-                  >
-                    <Input />
-                  </Form.Item>
+                <div className="col-12 text-left">
+                  <h2>{editPost ? 'Edit Post' : 'New Post'}</h2>
                 </div>
               </div>
-              <div className="row">
-                <div className="col-md-6 col-sm-12">
-                  <Form.Item
-                    name="shortDescription"
-                    label="Short Description"
-                    rules={[
-                      {
-                        required: true,
-                      },
-                    ]}
-                  >
-                    <Input />
-                  </Form.Item>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-md-6 col-sm-12">
-                  <Form.Item name="hero-image" label="Post Image">
-                    <Upload
-                      name="postImage"
-                      listType="picture-card"
-                      className="avatar-uploader"
-                      showUploadList={false}
-                      beforeUpload={beforeUpload}
-                      onChange={handleChange}
-                      customRequest={dummyRequest}
+              <Divider />
+              <Form
+                name="control-ref"
+                onFinish={onFinish}
+                layout="vertical"
+                requiredMark={false}
+                initialValues={{
+                  title: editPost ? postDetails.post_title : '',
+                  shortDescription: editPost ? postDetails.text : '',
+                  tags: editPost ? postDetails.tags : [],
+                  sideContent: editPost ? postSideContent : [],
+                }}
+              >
+                <div className="row">
+                  <div className="col-md-6 col-sm-12">
+                    <Form.Item
+                      name="title"
+                      label="Title"
+                      rules={[
+                        {
+                          required: true,
+                        },
+                      ]}
                     >
-                      {imageUrl || postImage ? (
-                        <img
-                          src={!imageUrl ? postImage : imageUrl}
-                          alt="avatar"
-                          style={{
-                            width: '100%',
-                          }}
-                        />
-                      ) : (
-                        uploadButton
-                      )}
-                    </Upload>
-                  </Form.Item>
+                      <Input />
+                    </Form.Item>
+                  </div>
                 </div>
-              </div>
-              <div className="row">
-                <div className="col-md-6 col-sm-12">
-                  <Form.Item
-                    name="tags"
-                    label="Tags"
-                    rules={[
-                      {
-                        required: true,
-                      },
-                    ]}
-                  >
-                    <Select
-                      mode="tags"
-                      style={{
-                        width: '100%',
-                      }}
-                      placeholder="Select Tags"
-                    />
-                  </Form.Item>
+                <div className="row">
+                  <div className="col-md-6 col-sm-12">
+                    <Form.Item
+                      name="shortDescription"
+                      label="Short Description"
+                      rules={[
+                        {
+                          required: true,
+                        },
+                      ]}
+                    >
+                      <Input />
+                    </Form.Item>
+                  </div>
                 </div>
-              </div>
-              <div className="row">
-                <div className="col-md-12 mb-2">Side Content</div>
-                <div className="col-md-12">
-                  <Form.List name="sideContent">
-                    {(fields, { add, remove }) => (
-                      <>
-                        {fields.map(({ key, name, ...restField }) => (
-                          <div className="row" key={key}>
-                            <div className="col-md-4">
-                              <Form.Item
-                                {...restField}
-                                name={[name, 'subtitle']}
-                                rules={[
-                                  {
-                                    required: true,
-                                    message: 'Missing Subtitle name',
-                                  },
-                                ]}
+                <div className="row">
+                  <div className="col-md-6 col-sm-12">
+                    <Form.Item name="hero-image" label="Post Image">
+                      <Upload
+                        name="postImage"
+                        listType="picture-card"
+                        className="avatar-uploader"
+                        showUploadList={false}
+                        beforeUpload={beforeUpload}
+                        onChange={handleChange}
+                        customRequest={dummyRequest}
+                      >
+                        {imageUrl || postImage ? (
+                          <img
+                            src={!imageUrl ? postImage : imageUrl}
+                            alt="avatar"
+                            style={{
+                              width: '100%',
+                            }}
+                          />
+                        ) : (
+                          uploadButton
+                        )}
+                      </Upload>
+                    </Form.Item>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-md-6 col-sm-12">
+                    <Form.Item
+                      name="tags"
+                      label="Tags"
+                      rules={[
+                        {
+                          required: true,
+                        },
+                      ]}
+                    >
+                      <Select
+                        mode="tags"
+                        style={{
+                          width: '100%',
+                        }}
+                        placeholder="Select Tags"
+                      />
+                    </Form.Item>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-md-12 mb-2">Side Content</div>
+                  <div className="col-md-12">
+                    <Form.List name="sideContent">
+                      {(fields, { add, remove }) => (
+                        <>
+                          {fields.map(({ key, name, ...restField }) => (
+                            <div className="row" key={key}>
+                              <div className="col-md-4">
+                                <Form.Item
+                                  {...restField}
+                                  name={[name, 'subtitle']}
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message: 'Missing Subtitle name',
+                                    },
+                                  ]}
+                                >
+                                  <Input placeholder="Subtitle Name" />
+                                </Form.Item>
+                              </div>
+                              <div className="col-md-4">
+                                <Form.Item
+                                  {...restField}
+                                  name={[name, 'value']}
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message: 'Missing value',
+                                    },
+                                  ]}
+                                >
+                                  <Input placeholder="Value" />
+                                </Form.Item>
+                              </div>
+                              <div className="col-md-4">
+                                <MinusCircleOutlined onClick={() => remove(name)} />
+                              </div>
+                            </div>
+                          ))}
+                          <div className="col-md-6">
+                            <Form.Item>
+                              <Button
+                                type="dashed"
+                                onClick={() => add()}
+                                block
+                                icon={<PlusOutlined />}
                               >
-                                <Input placeholder="Subtitle Name" />
-                              </Form.Item>
-                            </div>
-                            <div className="col-md-4">
-                              <Form.Item
-                                {...restField}
-                                name={[name, 'value']}
-                                rules={[
-                                  {
-                                    required: true,
-                                    message: 'Missing value',
-                                  },
-                                ]}
-                              >
-                                <Input placeholder="Value" />
-                              </Form.Item>
-                            </div>
-                            <div className="col-md-4">
-                              <MinusCircleOutlined onClick={() => remove(name)} />
-                            </div>
+                                Add Side Content
+                              </Button>
+                            </Form.Item>
                           </div>
-                        ))}
-                        <div className="col-md-6">
-                          <Form.Item>
-                            <Button
-                              type="dashed"
-                              onClick={() => add()}
-                              block
-                              icon={<PlusOutlined />}
-                            >
-                              Add Side Content
-                            </Button>
-                          </Form.Item>
-                        </div>
-                      </>
-                    )}
-                  </Form.List>
+                        </>
+                      )}
+                    </Form.List>
+                  </div>
                 </div>
-              </div>
-              <div className="row">
-                <div className="col-md-12 mb-2">Content</div>
-                <div className="col-md-12">
-                  <Editor
-                    editorState={editorState}
-                    wrapperClassName="demo-wrapper"
-                    editorClassName={style.editor}
-                    onEditorStateChange={(value) => setEditorState(value)}
-                  />
+                <div className="row">
+                  <div className="col-md-12 mb-2">Content</div>
+                  <div className="col-md-12">
+                    <Editor
+                      editorState={editorState}
+                      wrapperClassName="demo-wrapper"
+                      editorClassName={style.editor}
+                      onEditorStateChange={(value) => setEditorState(value)}
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="row">
-                <div className="col-md-6">
-                  <Button type="primary" htmlType="submit" className="mt-3 mr-3">
-                    {editPost ? 'Edit' : 'Create'}
-                  </Button>
+                <div className="row">
+                  <div className="col-md-6">
+                    <Button type="primary" htmlType="submit" className="mt-3 mr-3">
+                      {editPost ? 'Edit' : 'Create'}
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </Form>
+              </Form>
 
-            {/* <textarea disabled value={draftToHtml(convertToRaw(editorState.getCurrentContent()))} /> */}
-            {/* <Divider /> */}
-            {/* <Button onClick={() => submitValueToIPFS()}>Create IPFS Content</Button>
+              {/* <textarea disabled value={draftToHtml(convertToRaw(editorState.getCurrentContent()))} /> */}
+              {/* <Divider /> */}
+              {/* <Button onClick={() => submitValueToIPFS()}>Create IPFS Content</Button>
           <Button onClick={() => createPost()}>Create Post</Button> */}
+            </div>
           </div>
-        </div>
-      )}
-    </Spin>
+        )}
+      </Spin>
+    </>
   )
 }
 

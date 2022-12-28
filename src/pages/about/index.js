@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet'
 const About = () => {
   return (
     <div>
-      <Helmet title="Home" />
+      <Helmet title="About alXandria" />
       <div className="contianer mt-5">
         <div className="row">
           <div className="col-md-12">

@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet'
 const Media = () => {
   return (
     <div>
-      <Helmet title="Partnerships" />
+      <Helmet title="Media" />
       <div className="contianer mt-5">
         <div className="row">
           <div className="col-md-12">
