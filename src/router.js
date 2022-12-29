@@ -52,6 +52,11 @@ const routes = [
     Component: lazy(() => import('pages/media')),
     exact: true,
   },
+  {
+    path: '/contributors',
+    Component: lazy(() => import('pages/contributors')),
+    exact: true,
+  },
 ]
 
 const mapStateToProps = ({ settings }) => ({

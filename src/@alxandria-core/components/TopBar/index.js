@@ -46,7 +46,7 @@ const TopBar = ({ chain, dispatch }) => {
           profileNameRequest,
           txFee,
           '',
-          [coin(500, process.env.REACT_APP_COIN_MIN_DENOM)],
+          [coin(process.env.REACT_APP_CREATE_PROFILE_FEE, process.env.REACT_APP_COIN_MIN_DENOM)],
         )
 
         notification.success({ message: 'Profile Name created!' })
@@ -77,7 +77,7 @@ const TopBar = ({ chain, dispatch }) => {
   const connectWallet = async () => {
     if (window && window.keplr) {
       if (window.keplr.experimentalSuggestChain) {
-        await window.keplr.experimentalSuggestChain(ChainInfo)
+        // await window.keplr.experimentalSuggestChain(ChainInfo)
         await window.keplr.enable(ChainInfo.chainId)
 
         const offlineSigner = await window.keplr.getOfflineSigner(ChainInfo.chainId)

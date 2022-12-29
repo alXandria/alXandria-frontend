@@ -15,7 +15,7 @@ export const initialState = {
     // Read docs for available values: https://docs.visualbuilder.cloud
     // VB:REPLACE-START:SETTINGS
     authProvider: 'jwt',
-    logo: 'Alxandria',
+    logo: 'alXandria',
     version: 'v0.0.1',
     theme: 'default',
     locale: 'en-US',

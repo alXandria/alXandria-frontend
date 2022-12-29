@@ -137,7 +137,7 @@ const CreateEditPost = ({ editPost = false, postId = null, chain, dispatch }) =>
           entrypoint,
           txFee,
           '',
-          [coin(2000000, process.env.REACT_APP_COIN_MIN_DENOM)],
+          [coin(process.env.REACT_APP_EDIT_FEE, process.env.REACT_APP_COIN_MIN_DENOM)],
         )
         notification.success({ message: 'The post has been edited' })
         dispatch({
@@ -167,7 +167,7 @@ const CreateEditPost = ({ editPost = false, postId = null, chain, dispatch }) =>
           entrypoint,
           txFee,
           '',
-          [coin(1000000, process.env.REACT_APP_COIN_MIN_DENOM)],
+          [coin(process.env.REACT_APP_POST_FEE, process.env.REACT_APP_COIN_MIN_DENOM)],
         )
         notification.success({ message: 'The post has been created' })
 

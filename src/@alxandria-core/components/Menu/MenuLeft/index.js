@@ -109,28 +109,32 @@ const MenuLeft = ({
             </a>
           </div>
           <div className={style.menuItem}>
-            <a href="#" target="_blank" rel="noopener noreferrer">
+            <a href="#" rel="noopener noreferrer">
               News
             </a>
           </div>
           <div className={style.menuItem}>
-            <a href="#" target="_blank" rel="noopener noreferrer">
+            <a href="#" rel="noopener noreferrer">
               Current Events
             </a>
           </div>
           <br />
           <div className={style.menuItem}>
-            <a href="#" target="_blank" rel="noopener noreferrer">
+            <a href="/contributors" rel="noopener noreferrer">
               Contributors
             </a>
           </div>
           <div className={style.menuItem}>
-            <a href="#" target="_blank" rel="noopener noreferrer">
+            <a href="#" rel="noopener noreferrer">
               Other Projects
             </a>
           </div>
           <div className={style.menuItem}>
-            <a href="#" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://docs.alxandria.org/intro/resources"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Contact us
             </a>
           </div>
