@@ -43,8 +43,28 @@ const routes = [
     exact: true,
   },
   {
-    path: '/partnerships',
-    Component: lazy(() => import('pages/partnerships')),
+    path: '/research',
+    Component: lazy(() => import('pages/research')),
+    exact: true,
+  },
+  {
+    path: '/institutional',
+    Component: lazy(() => import('pages/institutional')),
+    exact: true,
+  },
+  {
+    path: '/ecosystem',
+    Component: lazy(() => import('pages/ecosystem')),
+    exact: true,
+  },
+  {
+    path: '/news',
+    Component: lazy(() => import('pages/news')),
+    exact: true,
+  },
+  {
+    path: '/current-events',
+    Component: lazy(() => import('pages/current-events')),
     exact: true,
   },
   {
