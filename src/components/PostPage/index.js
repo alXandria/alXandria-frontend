@@ -79,7 +79,7 @@ const PostPage = ({ chain }) => {
           }
           // Gas fee estimation
 
-          const gasPrice = GasPrice.fromString(`0.002${process.env.REACT_APP_COIN_MIN_DENOM}`)
+          const gasPrice = GasPrice.fromString(`500${process.env.REACT_APP_COIN_MIN_DENOM}`)
           const txFee = calculateFee(200000, gasPrice)
           // Send Tx
 
@@ -108,7 +108,7 @@ const PostPage = ({ chain }) => {
 
   const likePost = async () => {
     if (chain.user) {
-      const gasPrice = GasPrice.fromString(`0.002${process.env.REACT_APP_COIN_MIN_DENOM}`)
+      const gasPrice = GasPrice.fromString(`500${process.env.REACT_APP_COIN_MIN_DENOM}`)
       const txFee = calculateFee(200000, gasPrice)
 
       const accounts = await chain.offlineSigner.getAccounts()
@@ -173,6 +173,7 @@ const PostPage = ({ chain }) => {
             <div className="row">
               <div className="col-md-10 text-left">
                 <h1 style={{ fontWeight: 'bold' }}>{postDetails.post_title}</h1>
+                <div className="mt-2">{postDetails.text}</div>
               </div>
               <div className="col-md-2 text-right">
                 <div>
@@ -186,7 +187,6 @@ const PostPage = ({ chain }) => {
                 </div>
               </div>
               <Divider />
-              <div className="col-md-12 text-center mt-3 mb-5">{postDetails.text}</div>
               <div className="col-md-12">
                 {(postSideContent.length > 0 || heroImage) && (
                   <div className={style.sideContent}>
