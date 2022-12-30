@@ -33,7 +33,7 @@ const TopBar = ({ chain, dispatch }) => {
     if (chain.user && !chain.user.profileName) {
       console.log('setEverything')
 
-      const gasPrice = GasPrice.fromString(`0.002${process.env.REACT_APP_COIN_MIN_DENOM}`)
+      const gasPrice = GasPrice.fromString(`500${process.env.REACT_APP_COIN_MIN_DENOM}`)
       const txFee = calculateFee(200000, gasPrice)
 
       const accounts = await chain.offlineSigner.getAccounts()
