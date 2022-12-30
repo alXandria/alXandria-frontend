@@ -91,7 +91,7 @@ const PostPage = ({ chain }) => {
             entrypoint,
             txFee,
             '',
-            [coin(10000000, process.env.REACT_APP_COIN_MIN_DENOM)],
+            [coin(process.env.REACT_APP_DELETE_FEE, process.env.REACT_APP_COIN_MIN_DENOM)],
           )
           notification.success({
             error: 'Post has been deleted successfully!',
@@ -121,7 +121,7 @@ const PostPage = ({ chain }) => {
           likePostRequest,
           txFee,
           '',
-          [coin(10000, process.env.REACT_APP_COIN_MIN_DENOM)],
+          [coin(process.env.REACT_APP_LIKE_FEE, process.env.REACT_APP_COIN_MIN_DENOM)],
         )
         notification.success({
           message: 'You liked this post!',

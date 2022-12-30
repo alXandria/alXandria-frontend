@@ -121,51 +121,66 @@ const HomeComponent = ({ posts }) => {
         <Divider />
         <div className="container mt-5">
           <div className="row">
-            <div className="col-12">
-              {posts.all?.map(
-                (post, index1) =>
-                  index1 >= minIndex &&
-                  index1 < maxIndex && (
-                    <Link to={`post/${post.post_id}`} key={index1}>
-                      <div className="row">
-                        <div className="col-12">
-                          <div className="row mb-3">
-                            <div className="col-6">
-                              <h4>{post.post_title}</h4>
-                              {/* <span className={style.subspan}>By {post.author}</span> */}
-                            </div>
-                            <div className="col-12">{post.text}</div>
-                            <div className="col-md-12">
-                              {convertTime(
-                                post.last_edit_date ? post.last_edit_date : post.creation_date,
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="col-md-12 mb-2">
-                          <Tag color="volcano">Likes {post.likes}</Tag>
-                        </div>
-                        {post && post.tags && post.tags.length > 0 && (
-                          <div className="col-md-12">
-                            {post.tags.map((tag, index) => (
-                              <Tag key={index + index1}>{tag}</Tag>
-                            ))}
-                          </div>
-                        )}
-                        <Divider />
-                      </div>
-                    </Link>
-                  ),
-              )}
-
-              <Pagination
-                pageSize={10}
-                current={currentPage}
-                total={posts.totalCount}
-                onChange={handleChange}
-                style={{ bottom: '0px' }}
-              />
+            <div className="col-md-12 text-center">
+              alXandria is an online, open-source, collaborative encyclopedic effort. It allows
+              anyone to create, edit, or delete articles. It is a smart-contract on the Juno
+              blockchain. Borderless, permissionless, and self sovereign access to information and
+              participatory governance.
             </div>
+          </div>
+        </div>
+        <div className="container mt-5">
+          <div className="row">
+            {posts.all.length > 0 && (
+              <div className="col-12">
+                {posts.all?.map(
+                  (post, index1) =>
+                    index1 >= minIndex &&
+                    index1 < maxIndex && (
+                      <Link to={`post/${post.post_id}`} key={index1}>
+                        <div className="row">
+                          <div className="col-12">
+                            <div className="row mb-3">
+                              <div className="col-6">
+                                <h4>{post.post_title}</h4>
+                                {/* <span className={style.subspan}>By {post.author}</span> */}
+                              </div>
+                              <div className="col-12">{post.text}</div>
+                              <div className="col-md-12">
+                                {convertTime(
+                                  post.last_edit_date ? post.last_edit_date : post.creation_date,
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="col-md-12 mb-2">
+                            <Tag color="volcano">Likes {post.likes}</Tag>
+                          </div>
+                          {post && post.tags && post.tags.length > 0 && (
+                            <div className="col-md-12">
+                              {post.tags.map((tag, index) => (
+                                <Tag key={index + index1}>{tag}</Tag>
+                              ))}
+                            </div>
+                          )}
+                          <Divider />
+                        </div>
+                      </Link>
+                    ),
+                )}
+
+                <Pagination
+                  pageSize={10}
+                  current={currentPage}
+                  total={posts.totalCount}
+                  onChange={handleChange}
+                  style={{ bottom: '0px' }}
+                />
+              </div>
+            )}
+            {posts.all.length === 0 && (
+              <div className="col-md-12 text-center">Please come back to check latest news!</div>
+            )}
           </div>
         </div>
       </div>

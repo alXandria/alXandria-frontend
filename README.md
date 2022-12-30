@@ -1,6 +1,6 @@
 # Alxandria Frontend
 
-Alxandria Project
+alXandria Project
 
 ## Run Locally
 

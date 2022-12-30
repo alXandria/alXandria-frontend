@@ -94,43 +94,45 @@ const MenuLeft = ({
             </a>
           </div>
           <br />
-          <div className={style.menuItem}>
-            <a href="/partnerships" rel="noopener noreferrer">
-              Partnerships
-            </a>
-          </div>
-          <div className={style.menuItem}>Research</div>
-          <div className={style.menuItem}>Institutional</div>
-          <div className={style.menuItem}>Ecosystem</div>
-          <br />
-          <div className={style.menuItem}>
-            <a href="/media" rel="noopener noreferrer">
-              Media
-            </a>
-          </div>
-          <div className={style.menuItem}>
-            <a href="#" target="_blank" rel="noopener noreferrer">
-              News
-            </a>
-          </div>
-          <div className={style.menuItem}>
-            <a href="#" target="_blank" rel="noopener noreferrer">
-              Current Events
-            </a>
+          <div className={style.menuItem}>Partnerships</div>
+          <div style={{ paddingLeft: '10px' }}>
+            <div className={style.menuItem}>
+              <a href="/research">Research</a>
+            </div>
+            <div className={style.menuItem}>
+              <a href="/institutional">Institutional</a>
+            </div>
+            <div className={style.menuItem}>
+              <a href="/ecosystem">Ecosystem</a>
+            </div>
           </div>
           <br />
+          <div className={style.menuItem}>Media</div>
+          <div style={{ paddingLeft: '10px' }}>
+            <div className={style.menuItem}>
+              <a href="/news">News</a>
+            </div>
+            <div className={style.menuItem}>
+              <a href="/current-events">Current Events</a>
+            </div>
+          </div>
+          <br />
           <div className={style.menuItem}>
-            <a href="#" target="_blank" rel="noopener noreferrer">
+            <a href="/contributors" rel="noopener noreferrer">
               Contributors
             </a>
           </div>
           <div className={style.menuItem}>
-            <a href="#" target="_blank" rel="noopener noreferrer">
+            <a href="#" rel="noopener noreferrer">
               Other Projects
             </a>
           </div>
           <div className={style.menuItem}>
-            <a href="#" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://docs.alxandria.org/intro/resources"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Contact us
             </a>
           </div>
