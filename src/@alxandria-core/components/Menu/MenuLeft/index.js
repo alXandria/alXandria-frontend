@@ -5,7 +5,7 @@ import { Button, Layout } from 'antd'
 import classNames from 'classnames'
 import style from './style.module.scss'
 
-const mapStateToProps = ({ menu, settings }) => ({
+const mapStateToProps = ({ menu, settings, chain }) => ({
   menuData: menu.menuData,
   isMenuCollapsed: settings.isMenuCollapsed,
   isMobileView: settings.isMobileView,
@@ -13,6 +13,7 @@ const mapStateToProps = ({ menu, settings }) => ({
   isMenuShadow: settings.isMenuShadow,
   leftMenuWidth: settings.leftMenuWidth,
   menuColor: settings.menuColor,
+  chain,
 })
 
 const MenuLeft = ({
@@ -22,6 +23,7 @@ const MenuLeft = ({
   isMenuShadow,
   leftMenuWidth,
   menuColor,
+  chain,
 }) => {
   const menuSettings = isMobileView
     ? {
@@ -55,11 +57,13 @@ const MenuLeft = ({
         }}
       >
         <div className="container mt-5">
-          <div className={`${style.menuItem} mb-5`}>
-            <Link to="/create-post">
-              <Button type="primary">New Post</Button>
-            </Link>
-          </div>
+          {chain.user && (
+            <div className={`${style.menuItem} mb-5`}>
+              <Link to="/create-post">
+                <Button type="primary">New Post</Button>
+              </Link>
+            </div>
+          )}
           <div className={style.menuItem}>
             <a href="/about">About alXandria</a>
           </div>
