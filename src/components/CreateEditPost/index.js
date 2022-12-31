@@ -340,6 +340,12 @@ const CreateEditPost = ({ editPost = false, postId = null, chain, dispatch }) =>
                         {
                           required: true,
                         },
+                        {
+                          validator: (_, value) =>
+                            value.length <= 3
+                              ? Promise.resolve()
+                              : Promise.reject(new Error('Only 3 Tags are allowed!')),
+                        },
                       ]}
                     >
                       <Select
@@ -418,6 +424,23 @@ const CreateEditPost = ({ editPost = false, postId = null, chain, dispatch }) =>
                       wrapperClassName="demo-wrapper"
                       editorClassName={style.editor}
                       onEditorStateChange={(value) => setEditorState(value)}
+                      stripPastedStyles
+                      toolbar={{
+                        options: [
+                          'inline',
+                          'blockType',
+                          'fontSize',
+                          'list',
+                          'textAlign',
+                          'colorPicker',
+                          'link',
+                          'embedded',
+                          'emoji',
+                          'image',
+                          'remove',
+                          'history',
+                        ],
+                      }}
                     />
                   </div>
                 </div>

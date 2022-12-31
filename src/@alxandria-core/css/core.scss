@@ -1,7 +1,7 @@
 @import 'mixins.scss';
 
 :root {
-  --vb-color-primary: #832C21;
+  --vb-color-primary: #832c21;
 }
 
 html {
@@ -14,7 +14,7 @@ html {
 body {
   font-size: 1rem;
   line-height: 1.5;
-  font-family: $base-font;
+  font-family: $base-font !important;
   color: $text;
   overflow-x: hidden !important;
   position: relative;
@@ -36,10 +36,9 @@ a {
 
 input {
   outline: none !important;
-  font-family: $base-font;
+  font-family: $base-font !important;
   // color: $white_theme !important;
   // background-color: $light_red_theme !important;
-
 
   // &:focus,
   // &:hover {
@@ -67,7 +66,8 @@ h4,
 h5,
 h6 {
   color: $black;
-  font-family: $header-font;
+  font-family: $header-font !important;
+  font-weight: 600;
 }
 
 svg {
