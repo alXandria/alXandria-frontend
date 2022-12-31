@@ -130,59 +130,60 @@ const HomeComponent = ({ posts }) => {
           </div>
         </div>
         <div className="container mt-5">
-          <div className="row">
-            {posts.all.length > 0 && (
-              <div className="col-12">
-                {posts.all?.map(
-                  (post, index1) =>
-                    index1 >= minIndex &&
-                    index1 < maxIndex && (
-                      <Link to={`post/${post.post_id}`} key={index1}>
-                        <div className="row">
-                          <div className="col-12">
-                            <div className="row mb-3">
-                              <div className="col-6">
-                                <h4>{post.post_title}</h4>
-                                {/* <span className={style.subspan}>By {post.author}</span> */}
-                              </div>
-                              <div className="col-12">{post.text}</div>
-                              <div className="col-md-12">
-                                {convertTime(
-                                  post.last_edit_date ? post.last_edit_date : post.creation_date,
-                                )}
-                              </div>
+          {/* <div className="row"> */}
+          {posts.all.length > 0 && (
+            <div className="row">
+              {posts.all?.map(
+                (post, index1) =>
+                  index1 >= minIndex &&
+                  index1 < maxIndex && (
+                    <Link to={`post/${post.post_id}`} key={index1} className="col-md-6">
+                      <div className="col-md-12 col-sm-12">
+                        {/* <div className="row"> */}
+                        <div className="col-12">
+                          <div className="row mb-3">
+                            <div className="col-12">
+                              <h4>{post.post_title}</h4>
+                              {/* <span className={style.subspan}>By {post.author}</span> */}
                             </div>
-                          </div>
-                          <div className="col-md-12 mb-2">
-                            <Tag color="volcano">Likes {post.likes}</Tag>
-                          </div>
-                          {post && post.tags && post.tags.length > 0 && (
+                            <div className="col-md-12">{post.text}</div>
                             <div className="col-md-12">
-                              {post.tags.map((tag, index) => (
-                                <Tag key={index + index1}>{tag}</Tag>
-                              ))}
+                              {convertTime(
+                                post.last_edit_date ? post.last_edit_date : post.creation_date,
+                              )}
                             </div>
-                          )}
-                          <Divider />
+                          </div>
                         </div>
-                      </Link>
-                    ),
-                )}
+                        <div className="col-md-12 mb-2">
+                          <Tag color="volcano">Likes {post.likes}</Tag>
+                        </div>
+                        {post && post.tags && post.tags.length > 0 && (
+                          <div className="col-md-12">
+                            {post.tags.map((tag, index) => (
+                              <Tag key={index + index1}>{tag}</Tag>
+                            ))}
+                          </div>
+                        )}
+                        <Divider />
+                      </div>
+                    </Link>
+                  ),
+              )}
 
-                <Pagination
-                  pageSize={10}
-                  current={currentPage}
-                  total={posts.totalCount}
-                  onChange={handleChange}
-                  style={{ bottom: '0px' }}
-                />
-              </div>
-            )}
-            {posts.all.length === 0 && (
-              <div className="col-md-12 text-center">Please come back to check latest news!</div>
-            )}
-          </div>
+              <Pagination
+                pageSize={10}
+                current={currentPage}
+                total={posts.totalCount}
+                onChange={handleChange}
+                style={{ bottom: '0px' }}
+              />
+            </div>
+          )}
+          {posts.all.length === 0 && (
+            <div className="col-md-12 text-center">Please come back to check latest news!</div>
+          )}
         </div>
+        {/* </div> */}
       </div>
     </Spin>
   )
