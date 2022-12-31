@@ -201,7 +201,11 @@ const PostPage = ({ chain }) => {
                               <Divider className="mt-1" />
                             </div>
                             <div className="col-md-12 mb-3" style={{ textAlign: 'center' }}>
-                              <img src={heroImage} alt="hero" style={{ maxWidth: 200 }} />
+                              <img
+                                src={heroImage}
+                                alt="hero"
+                                style={{ maxWidth: 200, maxHeight: 200 }}
+                              />
                             </div>
                           </>
                         )}
