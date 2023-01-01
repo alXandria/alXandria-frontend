@@ -43,6 +43,7 @@ const HomeComponent = ({ posts }) => {
   // }
 
   const handleChange = (page) => {
+    window.scrollTo(0, 0)
     setCurrentPage(page)
     setMinIndex((page - 1) * pageSize)
     setMaxIndex(page * pageSize)

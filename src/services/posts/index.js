@@ -20,7 +20,7 @@ export default function getAllPosts() {
       let allPostsResponse = []
       allPostsResponse = [...queryResult.posts]
 
-      for (let i = 0; i < countResult.article_count % 10; i += 1) {
+      for (let i = 0; i < Math.floor(countResult.article_count / 10) + 1; i += 1) {
         const pagePosts = {
           all_posts: {
             start_after: currentPage * 10,
