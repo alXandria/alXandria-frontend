@@ -5,25 +5,19 @@ import ChainInfo from 'utils/chainInfo'
 
 export default function getAllPosts() {
   const httpBatch = new HttpBatchClient(ChainInfo.rpc)
-  let currentPage = 1
   return Tendermint34Client.create(httpBatch).then(async (tmClient) => {
     const queryClient = QueryClient.withExtensions(tmClient, setupWasmExtension)
     if (queryClient.wasm.queryContractSmart) {
       const ContractAddress = process.env.REACT_APP_CONTRACT_ADDR
-      // Query arguments
-      const allPosts = {
-        all_posts: {},
-      }
-      const queryResult = await queryClient.wasm.queryContractSmart(ContractAddress, allPosts)
       const count = { article_count: {} }
       const countResult = await queryClient.wasm.queryContractSmart(ContractAddress, count)
-      let allPostsResponse = []
-      allPostsResponse = [...queryResult.posts]
+      const allPostsResponse = []
 
       for (let i = 0; i < Math.floor(countResult.article_count / 10) + 1; i += 1) {
+        const startAfter = countResult.article_count + 1 - i * 10
         const pagePosts = {
           all_posts: {
-            start_after: currentPage * 10,
+            start_after: startAfter,
           },
         }
         // Do query type 'smart'
@@ -33,7 +27,6 @@ export default function getAllPosts() {
         )
 
         allPostsResponse.push(...paginationQueryResult.posts)
-        currentPage += 1
       }
 
       return {
