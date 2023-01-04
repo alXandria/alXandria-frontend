@@ -1,4 +1,4 @@
-# Alxandria Frontend
+# alXandria Frontend
 
 alXandria Project
 
