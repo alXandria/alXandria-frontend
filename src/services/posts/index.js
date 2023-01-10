@@ -1,6 +1,7 @@
 import { setupWasmExtension } from '@cosmjs/cosmwasm-stargate'
 import { QueryClient } from '@cosmjs/stargate'
 import { HttpBatchClient, Tendermint34Client } from '@cosmjs/tendermint-rpc'
+import axios from 'axios'
 import ChainInfo from 'utils/chainInfo'
 
 export default function getAllPosts() {
@@ -39,4 +40,15 @@ export default function getAllPosts() {
       allPosts: [],
     }
   })
+}
+
+export function getNewsAndCurrentEvents() {
+  return axios
+    .get(`${process.env.REACT_APP_NEWS_FEED_URL}/index.json`, {
+      'Content-Type': 'application/json',
+    })
+    .then((response) => ({ response }))
+    .catch(() => {
+      return { response: false }
+    })
 }
