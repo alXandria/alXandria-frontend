@@ -28,7 +28,9 @@ const News = () => {
               {news.map((item, index) => {
                 return (
                   <li key={index} style={{ fontSize: '18px' }}>
-                    <a href={item.link}>{item.title}</a>
+                    <a href={item.link} target="_blank" rel="noreferrer">
+                      {item.title}
+                    </a>
                   </li>
                 )
               })}
