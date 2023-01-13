@@ -17,7 +17,6 @@ const mapStateToProps = ({ menu, settings, chain }) => ({
 })
 
 const MenuLeft = ({
-  isMenuCollapsed,
   isMobileView,
   isMenuUnfixed,
   isMenuShadow,
@@ -34,7 +33,7 @@ const MenuLeft = ({
     : {
         width: leftMenuWidth,
         collapsible: false,
-        collapsed: isMenuCollapsed,
+        collapsed: false,
         breakpoint: 'lg',
       }
 
@@ -52,7 +51,7 @@ const MenuLeft = ({
       <div
         className={`${style.menuOuter} pb-5`}
         style={{
-          width: isMenuCollapsed && !isMobileView ? 80 : leftMenuWidth,
+          width: leftMenuWidth,
           height: isMobileView || isMenuUnfixed ? 'calc(100% - 64px)' : 'calc(100% - 110px)',
         }}
       >
