@@ -41,7 +41,7 @@ const Search = ({ intl: { formatMessage }, posts }) => {
   const changeSearchText = (e) => {
     setSearchText(e.target.value)
     const searchValue = e.target.value
-    if (searchValue.length > 3) {
+    if (searchValue.length > 2) {
       const filtetedPost = posts.all.filter((element) => {
         return (
           element.post_title.toLowerCase().includes(searchValue.toLowerCase()) ||
